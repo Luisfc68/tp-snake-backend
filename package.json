@@ -1,0 +1,27 @@
+{
+  "name": "snake-battle-backend",
+  "version": "1.0.0",
+  "description": "Backend del juego Snake Battle para la materia desarrollo fullstack",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node -r dotenv/config src/app.js"
+  },
+  "keywords": [
+    "snake",
+    "node",
+    "express",
+    "socket.io"
+  ],
+  "author": "Luis Chavez",
+  "license": "ISC",
+  "dependencies": {
+    "consola": "2.15.3",
+    "express": "4.18.1",
+    "jsonwebtoken": "8.5.1",
+    "mongoose": "6.5.2"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.1"
+  }
+}
