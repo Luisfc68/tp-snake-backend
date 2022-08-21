@@ -14,6 +14,7 @@ Este repositorio es el backend para el juego realizado para la materia desarroll
 
 
 ## ¿Como levantar el juego en local?
-1. `a`
-2. Crear archivo .env con las variables de entorno especificadas en la sección anterior.
-3. `npm run dev`
+1. `git clone https://github.com/Luisfc68/tp-snake-backend.git`
+2. `cd tp-snake-backend`
+3. Crear archivo .env con las variables de entorno especificadas en la sección anterior.
+4. `npm run dev`
