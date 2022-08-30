@@ -1,5 +1,5 @@
 const { Player } = require('../models/player');
-const { hash, generateTokens, validateRefreshToken } = require('../utils/securityUtils');
+const { hash, generateTokens, validateRefreshToken } = require('../utils/security.utils');
 const { errors } = require('../constants/errorMessages');
 
 const authErrorResponse = (res, message) => res.status(401)

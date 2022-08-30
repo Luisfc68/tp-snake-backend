@@ -1,5 +1,5 @@
 const APIError = require('../errors/APIError');
-const { validateAccessToken } = require('../utils/securityUtils');
+const { validateAccessToken } = require('../utils/security.utils');
 const { errors } = require("../constants/errorMessages");
 
 const BEARER = 'Bearer ';
