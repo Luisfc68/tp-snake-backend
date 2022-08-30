@@ -10,6 +10,7 @@ module.exports = function (err, req, res, next) {
     if (err.name === 'ValidationError') {
         res.status(400).json(validationErrorResponse(err));
     } else {
-        res.status(err.statusCode || 500).json({ error: err.message });
+        const response = res.status(err.statusCode || 500);
+        err.message ? response.json({ error: err.message }) : response.send();
     }
 }
