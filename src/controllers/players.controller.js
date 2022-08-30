@@ -88,7 +88,7 @@ const updatePlayer = function (req, res, next) {
 const uploadPlayerImage = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
     saveImage('players', playerId, req.file)
-        .then(result => {
+        .then(() => {
             res.status(204).send();
         })
         .catch(next);
