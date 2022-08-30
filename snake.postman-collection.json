@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Luisfc68\",\r\n    \"password\": \"12345\",\r\n    \"email\": \"luis\"\r\n}",
+							"raw": "{\r\n    \"username\": \"Luisfc68\",\r\n    \"password\": \"12345\",\r\n    \"email\": \"luis2@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -46,6 +46,124 @@
 							],
 							"path": [
 								"players",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6301634e1e908bc01bb9d50f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get players",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/players",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete player",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/players",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit player",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Luisfc68\",\r\n    \"password\": \"12345\",\r\n    \"email\": \"luiseditado@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/players",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set player image",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/D:/Descargas/bojji.jpg"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/players/images",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"players",
+								"images"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get player image",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/players/images/:id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"players",
+								"images",
 								":id"
 							],
 							"variable": [
@@ -124,7 +242,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsanR5cCI6IkpXVCJ9.eyJpZCI6IjYzMDE2MzRlMWU5MDhiYzAxYmI5ZDUwZiIsImlhdCI6MTY2MTAzNjc0NCwiZXhwIjoxNjYxMDQwMzQ0fQ.hL7m0hnCZW0uYO9ZPIvhhjPnZmD7NxthDj3amewtVpg",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMDE2MzRlMWU5MDhiYzAxYmI5ZDUwZiIsImlhdCI6MTY2MTgzMjE0OSwiZXhwIjoxNjYxODM1NzQ5fQ.jaipgcHaPXlBueKvodMQJFtIRFXUozGKCrH82yVEM-g",
 				"type": "string"
 			}
 		]
