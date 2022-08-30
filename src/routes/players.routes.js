@@ -1,6 +1,7 @@
-const { Router } = require("express");
-const playersController = require("../controllers/players.controller");
-const { authMiddleware } = require("../middlewares/auth.middleware");
+const { Router } = require('express');
+const playersController = require('../controllers/players.controller');
+const { authMiddleware } = require('../middlewares/auth.middleware');
+const { multipartMiddleware } = require('../middlewares/multer.middleware');
 
 const router = Router();
 const players = '/players';
@@ -10,5 +11,7 @@ router.post(players, playersController.signUp);
 router.get(playersById, authMiddleware(), playersController.getPlayer);
 router.delete(players, authMiddleware(), playersController.deletePlayer);
 router.put(players, authMiddleware(), playersController.updatePlayer);
+router.put(players + '/images', multipartMiddleware.single('image'), authMiddleware(), playersController.uploadPlayerImage);
+router.get(players + '/images/:id', playersController.getPlayerImage);
 
 module.exports = router;
