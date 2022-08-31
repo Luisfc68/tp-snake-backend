@@ -54,6 +54,31 @@ const getAllPlayers= function(req,res,next){
         ).catch(next);
 
 }
+const getAllPlayersByWinGames= function(req,res,next){
+    const offset=req.query.offset||0;
+    const limit=req.query.limit||10;
+    const winMin=req.query.winMin||0;
+    const winMax= req.query.winMax||null;
+    if(winMax==null){
+        Player.find(
+            {"gamesWon":{$gte:winMin}}
+        ).skip(offset).limit(limit)
+        .then(players=> 
+                res.json(players)
+            ).catch(next);
+    }
+    else{
+        Player.find(
+            {"gamesWon":{$gte:winMin,$lte: winMax}}
+        ).skip(offset).limit(limit)
+        .then(players=> 
+                res.json(players)
+            ).catch(next);
+    }
+    
+
+}
+
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
@@ -119,6 +144,7 @@ module.exports = {
     signUp,
     getPlayer,
     getAllPlayers,
+    getAllPlayersByWinGames,
     deletePlayer,
     updatePlayer,
     uploadPlayerImage,
