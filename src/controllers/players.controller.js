@@ -54,7 +54,7 @@ const getAllPlayers= function(req,res,next){
         ).catch(next);
 
 }
-const getAllPlayersByWinGames= function(req,res,next){
+const getAllPlayersByGamesWon= function(req,res,next){
     const offset=req.query.offset||0;
     const limit=req.query.limit||10;
     const winMin=req.query.winMin||0;
@@ -70,6 +70,30 @@ const getAllPlayersByWinGames= function(req,res,next){
     else{
         Player.find(
             {"gamesWon":{$gte:winMin,$lte: winMax}}
+        ).skip(offset).limit(limit)
+        .then(players=> 
+                res.json(players)
+            ).catch(next);
+    }
+    
+
+}
+const getAllPlayersByPlayedGames= function(req,res,next){
+    const offset=req.query.offset||0;
+    const limit=req.query.limit||10;
+    const playedGamesMin=req.query.playedGamesMin||0;
+    const playedGamesMax= req.query.playedGamesMax||null;
+    if(playedGamesMax==null){
+        Player.find(
+            {"playedGames":{$gte:playedGamesMin}}
+        ).skip(offset).limit(limit)
+        .then(players=> 
+                res.json(players)
+            ).catch(next);
+    }
+    else{
+        Player.find(
+            {"playedGames":{$gte:playedGamesMin,$lte: playedGamesMax}}
         ).skip(offset).limit(limit)
         .then(players=> 
                 res.json(players)
@@ -144,7 +168,8 @@ module.exports = {
     signUp,
     getPlayer,
     getAllPlayers,
-    getAllPlayersByWinGames,
+    getAllPlayersByGamesWon,
+    getAllPlayersByPlayedGames,
     deletePlayer,
     updatePlayer,
     uploadPlayerImage,
