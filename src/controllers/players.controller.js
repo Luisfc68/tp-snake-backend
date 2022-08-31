@@ -47,7 +47,8 @@ const getPlayer = function (req, res, next) {
 const getAllPlayers= function(req,res,next){
     const offset=req.query.offset||0;
     const limit=req.query.limit||10;
-    Player.find().skip(offset).limit(limit)
+    const player=req.body.player||null;
+    Player.find(player).skip(offset).limit(limit)
     .then(players=> 
             res.json(players)
         ).catch(next);
