@@ -167,9 +167,9 @@ const getPlayerImage = function (req, res, next) {
 module.exports = {
     signUp,
     getPlayer,
-    getAllPlayers,
-    getAllPlayersByGamesWon,
-    getAllPlayersByPlayedGames,
+    getPlayers,
+    getPlayersByGamesWon,
+    getPlayersByPlayedGames,
     deletePlayer,
     updatePlayer,
     uploadPlayerImage,
