@@ -9,6 +9,7 @@ const playersById = players + '/:id';
 
 router.post(players, playersController.signUp);
 router.get(playersById, authMiddleware(), playersController.getPlayer);
+router.get(players,authMiddleware(),playersController.getAllPlayers)
 router.delete(players, authMiddleware(), playersController.deletePlayer);
 router.put(players, authMiddleware(), playersController.updatePlayer);
 router.put(players + '/images', multipartMiddleware.single('image'), authMiddleware(), playersController.uploadPlayerImage);

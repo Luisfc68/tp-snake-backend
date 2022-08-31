@@ -44,7 +44,15 @@ const getPlayer = function (req, res, next) {
         })
         .catch(next);
 }
+const getAllPlayers= function(req,res,next){
+    const offset=req.query.offset||0;
+    const limit=req.query.limit||10;
+    Player.find().skip(offset).limit(limit)
+    .then(players=> 
+            res.json(players)
+        ).catch(next);
 
+}
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
@@ -109,6 +117,7 @@ const getPlayerImage = function (req, res, next) {
 module.exports = {
     signUp,
     getPlayer,
+    getAllPlayers,
     deletePlayer,
     updatePlayer,
     uploadPlayerImage,
