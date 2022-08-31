@@ -36,6 +36,8 @@ const playerSchema = new Schema(
 playerSchema.set('toJSON',{
     transform: (document, object) => {
         object.id = document.id;
+        object.image = `/players/images/${object.id}`;
+        object.winRatio = document.playedGames? document.gamesWon / document.playedGames : 0;
         delete object._id;
         delete object.password;
     }
