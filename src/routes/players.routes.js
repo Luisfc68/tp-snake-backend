@@ -9,9 +9,9 @@ const playersById = players + '/:id';
 
 router.post(players, playersController.signUp);
 router.get(playersById, authMiddleware(), playersController.getPlayer);
-router.get(players,authMiddleware(),playersController.getAllPlayers);
-router.get(players + '/gamesWon',authMiddleware(),playersController.getAllPlayersByGamesWon);
-router.get('/playedGames',authMiddleware(),playersController.getAllPlayersByPlayedGames);
+router.get(players,authMiddleware(),playersController.getPlayers);
+router.get(players + '/gamesWon',authMiddleware(),playersController.getPlayersByGamesWon);
+router.get(players + '/playedGames',authMiddleware(),playersController.getPlayersByPlayedGames);
 router.delete(players, authMiddleware(), playersController.deletePlayer);
 router.put(players, authMiddleware(), playersController.updatePlayer);
 router.put(players + '/images', multipartMiddleware.single('image'), authMiddleware(), playersController.uploadPlayerImage);

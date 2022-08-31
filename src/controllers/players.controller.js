@@ -44,7 +44,7 @@ const getPlayer = function (req, res, next) {
         })
         .catch(next);
 }
-const getAllPlayers= function(req,res,next){
+const getPlayers= function(req,res,next){
     const offset=req.query.offset||0;
     const limit=req.query.limit||10;
     const player=req.body.player||null;
@@ -54,7 +54,7 @@ const getAllPlayers= function(req,res,next){
         ).catch(next);
 
 }
-const getAllPlayersByGamesWon= function(req,res,next){
+const getPlayersByGamesWon= function(req,res,next){
     const offset=req.query.offset||0;
     const limit=req.query.limit||10;
     const winMin=req.query.winMin||0;
@@ -78,7 +78,7 @@ const getAllPlayersByGamesWon= function(req,res,next){
     
 
 }
-const getAllPlayersByPlayedGames= function(req,res,next){
+const getPlayersByPlayedGames= function(req,res,next){
     const offset=req.query.offset||0;
     const limit=req.query.limit||10;
     const playedGamesMin=req.query.playedGamesMin||0;
