@@ -13,6 +13,7 @@ const login = function (req, res, next) {
     .then(player => {
         if (!player || player?.password !== hash(password)) {
             authErrorResponse(res, errors.auth.invalidCredentials);
+            return;
         }
         const tokens = generateTokens({ id: player.id });
         res.status(200).json(tokens).send();

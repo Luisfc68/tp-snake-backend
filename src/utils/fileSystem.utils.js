@@ -6,7 +6,7 @@ const imagesDirectory = `${path.resolve('.')}/public/images/`
 const saveImage = (group, name, file) => {
     return getImage(group, name)
         .then(imageName => {
-            return fs.unlink(path.join(imagesDirectory, group, imageName));
+            return imageName ? fs.unlink(path.join(imagesDirectory, group, imageName)) : Promise.resolve();
         })
         .then(() => {
             const extension = file.mimetype.split('/').at(-1);
