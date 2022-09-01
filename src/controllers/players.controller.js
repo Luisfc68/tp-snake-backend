@@ -61,17 +61,13 @@ const getPlayersByGamesWon= function(req,res,next){
     const winMin=req.query.winMin||0;
     const winMax= req.query.winMax||null;
     if(winMax==null){
-        Player.find(
-            {"gamesWon":{$gte:winMin}}
-        ).skip(offset).limit(limit)
+        Player.find().where("gamesWon").gte(winMin).skip(offset).limit(limit)
         .then(players=> 
                 res.json(players)
             ).catch(next);
     }
     else{
-        Player.find(
-            {"gamesWon":{$gte:winMin,$lte: winMax}}
-        ).skip(offset).limit(limit)
+        Player.find().where("gamesWon").gte(winMin).lte(winMax).skip(offset).limit(limit)
         .then(players=> 
                 res.json(players)
             ).catch(next);
@@ -85,17 +81,13 @@ const getPlayersByPlayedGames= function(req,res,next){
     const playedGamesMin=req.query.playedGamesMin||0;
     const playedGamesMax= req.query.playedGamesMax||null;
     if(playedGamesMax==null){
-        Player.find(
-            {"playedGames":{$gte:playedGamesMin}}
-        ).skip(offset).limit(limit)
+        Player.find().where("playedGames").gte(playedGamesMin).skip(offset).limit(limit)
         .then(players=> 
                 res.json(players)
             ).catch(next);
     }
     else{
-        Player.find(
-            {"playedGames":{$gte:playedGamesMin,$lte: playedGamesMax}}
-        ).skip(offset).limit(limit)
+        Player.find().where("playedGames").gte(playedGamesMin).lte(playedGamesMax).skip(offset).limit(limit)
         .then(players=> 
                 res.json(players)
             ).catch(next);
