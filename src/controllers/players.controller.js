@@ -48,55 +48,61 @@ const getPlayer = function (req, res, next) {
 const getPlayers= function(req,res,next){
     const offset=req.query.offset||0;
     const limit=req.query.limit||10;
-    const player=req.body.player||null;
-    Player.find(player).skip(offset).limit(limit)
-    .then(players=> 
-            res.json(players)
-        ).catch(next);
+    const username=req.query.username||null;
+    const email=req.query.email||null;
+    const gamesWonMin=req.query.gamesWonMin;
+    const gamesWonMax= req.query.gamesWonMax;
+    const playedGamesMin=req.query.playedGamesMin;
+    const playedGamesMax= req.query.playedGamesMax;
+    const winRatioMin=req.query.winRatioMin||0;
+    const winRatioMax= req.query.winRatioMax||1;
+    const condition=generateConditions(username,email);
+    let query= Player.find(condition);
+    checkMinMax(gamesWonMin,gamesWonMax);
+    query=generateQueryMinMax(query,gamesWonMin,gamesWonMax,"gamesWon");
+    checkMinMax(playedGamesMin,playedGamesMax);
+    query=generateQueryMinMax(query,playedGamesMin,playedGamesMax,"playedGames");
+    checkMinMax(winRatioMin,winRatioMax);
+    query=generateQueryMinMax(query,winRatioMin,winRatioMax,"winRatio");
+    query.limit(limit).skip(offset).then(players=> 
+        res.json(players)
+    ).catch(next);
 
 }
-const getPlayersByGamesWon= function(req,res,next){
-    const offset=req.query.offset||0;
-    const limit=req.query.limit||10;
-    const winMin=req.query.winMin||0;
-    const winMax= req.query.winMax||null;
-    if(winMax==null){
-        Player.find().where("gamesWon").gte(winMin).skip(offset).limit(limit)
-        .then(players=> 
-                res.json(players)
-            ).catch(next);
+
+function checkMinMax(min,max){
+    if(min && max && min>max){
+        throw new APIError({ statusCode: 400});
+    }
+}
+
+function generateQueryMinMax(query,min,max,property){
+    if(min && max){
+        return query.where(property).gte(min).lte(max);
+    }
+    else if(min){
+        return query.where(property).gte(min);
+    }
+    else if(max){
+        return query.where(property).lte(max);
     }
     else{
-        Player.find().where("gamesWon").gte(winMin).lte(winMax).skip(offset).limit(limit)
-        .then(players=> 
-                res.json(players)
-            ).catch(next);
+        return query;
     }
-    
+}
+function generateConditions(username,email){
+    let query={};
+    if(username){
+        query.username=username;
+    }
+    if(email){
+        query.email=email;
+    }
+    return query;
 
 }
-const getPlayersByPlayedGames= function(req,res,next){
-    const offset=req.query.offset||0;
-    const limit=req.query.limit||10;
-    const playedGamesMin=req.query.playedGamesMin||0;
-    const playedGamesMax= req.query.playedGamesMax||null;
-    if(playedGamesMax==null){
-        Player.find().where("playedGames").gte(playedGamesMin).skip(offset).limit(limit)
-        .then(players=> 
-                res.json(players)
-            ).catch(next);
-    }
-    else{
-        Player.find().where("playedGames").gte(playedGamesMin).lte(playedGamesMax).skip(offset).limit(limit)
-        .then(players=> 
-                res.json(players)
-            ).catch(next);
-    }
-    
+/*
 
-}
-
-//{ }
 const getPlayersByWinRatio= function(req,res,next){
     const offset=req.query.offset||0;
     const limit=req.query.limit||10;
@@ -137,7 +143,7 @@ const getPlayersByWinRatio= function(req,res,next){
             }
             ).catch(next);
 }
-
+*/
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
@@ -203,9 +209,6 @@ module.exports = {
     signUp,
     getPlayer,
     getPlayers,
-    getPlayersByGamesWon,
-    getPlayersByPlayedGames,
-    getPlayersByWinRatio,
     deletePlayer,
     updatePlayer,
     uploadPlayerImage,

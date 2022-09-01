@@ -25,6 +25,18 @@ const playerSchema = new Schema(
         gamesWon: {
             type: Number,
             default: 0
+        },
+        winRatio:{
+            type: Number,
+            default: 0,
+            set: function() {
+                if(this.gamesWon!=0 && this.playedGames!=0){
+                    return this.gamesWon/this.playedGames
+                }
+                else{
+                    return 0;
+                }
+            },
         }
     },
     {
