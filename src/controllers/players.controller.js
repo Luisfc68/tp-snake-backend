@@ -5,6 +5,7 @@ const { errors } = require('../constants/errorMessages');
 const { isValidId } = require('../utils/mongo.utils');
 const { getIdFromAuthenticatedRequest } = require('../utils/controller.utils');
 const { saveImage, getImage } = require('../utils/fileSystem.utils');
+const { text } = require('express');
 
 const signUp = function (req, res, next) {
     const { email, username, password } = req.body;
@@ -103,6 +104,48 @@ const getPlayersByPlayedGames= function(req,res,next){
 
 }
 
+//{ }
+const getPlayersByWinRatio= function(req,res,next){
+    const offset=req.query.offset||0;
+    const limit=req.query.limit||10;
+    const winRatioMin=req.query.winRatioMin||0;
+    const winRatioMax= req.query.winRatioMax||null;
+    let playersByWinRatio=[];
+        Player.aggregate([ 
+            {$project: {
+                _id:"$_id",
+                username:"$username",
+                email: "$email",
+                playedGames:"$playedGames",
+                gamesWon:"$gamesWon",
+                winRatio:{
+                    $cond: [
+                        {$gt:["$playedGames",0]},
+                        {$divide:["$gamesWon","$playedGames"] }, 
+                        0 
+                    ]
+                }
+            }
+        },
+        ]).sort({"winRatio":-1}).skip(offset).limit(limit)
+        .then(players=>
+                {players.forEach(player => {
+                    if(winRatioMax==null){
+                    if(player.winRatio>=winRatioMin){
+                        playersByWinRatio.push(player)
+                    }
+                    }
+                    else{
+                        if(player.winRatio>=winRatioMin && player.winRatio<=winRatioMax){
+                            playersByWinRatio.push(player)
+                        }
+                    }
+                });
+              res.json(playersByWinRatio)      
+            }
+            ).catch(next);
+}
+
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
@@ -170,6 +213,7 @@ module.exports = {
     getPlayers,
     getPlayersByGamesWon,
     getPlayersByPlayedGames,
+    getPlayersByWinRatio,
     deletePlayer,
     updatePlayer,
     uploadPlayerImage,
