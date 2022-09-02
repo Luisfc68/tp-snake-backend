@@ -54,16 +54,16 @@ const getPlayers= function(req,res,next){
     let query= Player.find();
     query=generateQueryConditions({query:query,field:"username",value:username});
     query=generateQueryConditions({query:query,field:"email",value:email});
-    query=generateQueryMinMax(query,req.query.gamesWonMin,req.query.gamesWonMax,"gamesWon");
-    query=generateQueryMinMax(query,req.query.playedGamesMin,req.query.playedGamesMax,"playedGames");
-    query=generateQueryMinMax(query,req.query.winRatioMin,req.query.winRatioMax,"winRatio");
+    query=generateQueryMinMax({query:query,min:req.query.gamesWonMin,max:req.query.gamesWonMax,property:"gamesWon"});
+    query=generateQueryMinMax({query:query,min:req.query.playedGamesMin,max:req.query.playedGamesMax,property:"playedGames"});
+    query=generateQueryMinMax({query:query,min:req.query.winRatioMin,max:req.query.winRatioMax,property:"winRatio"});
     query.limit(limit).skip(offset).then(players=> 
         res.json(players)
     ).catch(next);
 
 }
 
-function generateQueryMinMax(query,min,max,property){
+function generateQueryMinMax({query,min,max,property}){
     checkMinMax(min,max);
     if(min && max){
         return query.where(property).gte(min).lte(max);
