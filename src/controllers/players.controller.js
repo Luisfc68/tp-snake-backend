@@ -6,6 +6,7 @@ const { isValidId } = require('../utils/mongo.utils');
 const { getIdFromAuthenticatedRequest } = require('../utils/controller.utils');
 const { saveImage, getImage } = require('../utils/fileSystem.utils');
 const { text } = require('express');
+const { use } = require('../routes/players.routes');
 
 const signUp = function (req, res, next) {
     const { email, username, password } = req.body;
@@ -50,33 +51,20 @@ const getPlayers= function(req,res,next){
     const limit=req.query.limit||10;
     const username=req.query.username||null;
     const email=req.query.email||null;
-    const gamesWonMin=req.query.gamesWonMin;
-    const gamesWonMax= req.query.gamesWonMax;
-    const playedGamesMin=req.query.playedGamesMin;
-    const playedGamesMax= req.query.playedGamesMax;
-    const winRatioMin=req.query.winRatioMin||0;
-    const winRatioMax= req.query.winRatioMax||1;
-    const condition=generateConditions(username,email);
-    let query= Player.find(condition);
-    checkMinMax(gamesWonMin,gamesWonMax);
-    query=generateQueryMinMax(query,gamesWonMin,gamesWonMax,"gamesWon");
-    checkMinMax(playedGamesMin,playedGamesMax);
-    query=generateQueryMinMax(query,playedGamesMin,playedGamesMax,"playedGames");
-    checkMinMax(winRatioMin,winRatioMax);
-    query=generateQueryMinMax(query,winRatioMin,winRatioMax,"winRatio");
+    let query= Player.find();
+    query=generateQueryConditions({query:query,field:"username",value:username});
+    query=generateQueryConditions({query:query,field:"email",value:email});
+    query=generateQueryMinMax(query,req.query.gamesWonMin,req.query.gamesWonMax,"gamesWon");
+    query=generateQueryMinMax(query,req.query.playedGamesMin,req.query.playedGamesMax,"playedGames");
+    query=generateQueryMinMax(query,req.query.winRatioMin,req.query.winRatioMax,"winRatio");
     query.limit(limit).skip(offset).then(players=> 
         res.json(players)
     ).catch(next);
 
 }
 
-function checkMinMax(min,max){
-    if(min && max && min>max){
-        throw new APIError({ statusCode: 400});
-    }
-}
-
 function generateQueryMinMax(query,min,max,property){
+    checkMinMax(min,max);
     if(min && max){
         return query.where(property).gte(min).lte(max);
     }
@@ -90,60 +78,21 @@ function generateQueryMinMax(query,min,max,property){
         return query;
     }
 }
-function generateConditions(username,email){
-    let query={};
-    if(username){
-        query.username=username;
+
+function checkMinMax(min,max){
+    if(min && max && min>max){
+        throw new APIError({ statusCode: 400});
     }
-    if(email){
-        query.email=email;
+}
+
+function generateQueryConditions({query,field,value}){
+    if(value){
+        return query.where({[field]:value})
     }
     return query;
 
 }
-/*
 
-const getPlayersByWinRatio= function(req,res,next){
-    const offset=req.query.offset||0;
-    const limit=req.query.limit||10;
-    const winRatioMin=req.query.winRatioMin||0;
-    const winRatioMax= req.query.winRatioMax||null;
-    let playersByWinRatio=[];
-        Player.aggregate([ 
-            {$project: {
-                _id:"$_id",
-                username:"$username",
-                email: "$email",
-                playedGames:"$playedGames",
-                gamesWon:"$gamesWon",
-                winRatio:{
-                    $cond: [
-                        {$gt:["$playedGames",0]},
-                        {$divide:["$gamesWon","$playedGames"] }, 
-                        0 
-                    ]
-                }
-            }
-        },
-        ]).sort({"winRatio":-1}).skip(offset).limit(limit)
-        .then(players=>
-                {players.forEach(player => {
-                    if(winRatioMax==null){
-                    if(player.winRatio>=winRatioMin){
-                        playersByWinRatio.push(player)
-                    }
-                    }
-                    else{
-                        if(player.winRatio>=winRatioMin && player.winRatio<=winRatioMax){
-                            playersByWinRatio.push(player)
-                        }
-                    }
-                });
-              res.json(playersByWinRatio)      
-            }
-            ).catch(next);
-}
-*/
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
