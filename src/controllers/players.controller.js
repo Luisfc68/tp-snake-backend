@@ -2,11 +2,9 @@ const { Player } = require('../models/player');
 const { hash } = require('../utils/security.utils');
 const APIError = require('../errors/APIError');
 const { errors } = require('../constants/errorMessages');
-const { isValidId } = require('../utils/mongo.utils');
+const { isValidId, ComplexQueryBuilder } = require('../utils/mongo');
 const { getIdFromAuthenticatedRequest } = require('../utils/controller.utils');
 const { saveImage, getImage } = require('../utils/fileSystem.utils');
-const { text } = require('express');
-const { use } = require('../routes/players.routes');
 
 const signUp = function (req, res, next) {
     const { email, username, password } = req.body;
@@ -46,51 +44,26 @@ const getPlayer = function (req, res, next) {
         })
         .catch(next);
 }
-const getPlayers= function(req,res,next){
-    const offset=req.query.offset||0;
-    const limit=req.query.limit||10;
-    const username=req.query.username||null;
-    const email=req.query.email||null;
-    let query= Player.find();
-    query=generateQueryConditions({query:query,field:"username",value:username});
-    query=generateQueryConditions({query:query,field:"email",value:email});
-    query=generateQueryMinMax({query:query,min:req.query.gamesWonMin,max:req.query.gamesWonMax,property:"gamesWon"});
-    query=generateQueryMinMax({query:query,min:req.query.playedGamesMin,max:req.query.playedGamesMax,property:"playedGames"});
-    query=generateQueryMinMax({query:query,min:req.query.winRatioMin,max:req.query.winRatioMax,property:"winRatio"});
-    query.limit(limit).skip(offset).then(players=> 
-        res.json(players)
-    ).catch(next);
+const getPlayers = function(req,res,next) {
+    const offset = req.query.offset || 0;
+    const limit = req.query.limit || 10;
+    const {
+        gamesWonMin, gamesWonMax,
+        playedGamesMin, playedGamesMax,
+        winRatioMin, winRatioMax
+    } = req.query;
 
-}
-
-function generateQueryMinMax({query,min,max,property}){
-    checkMinMax(min,max);
-    if(min && max){
-        return query.where(property).gte(min).lte(max);
-    }
-    else if(min){
-        return query.where(property).gte(min);
-    }
-    else if(max){
-        return query.where(property).lte(max);
-    }
-    else{
-        return query;
-    }
-}
-
-function checkMinMax(min,max){
-    if(min && max && min>max){
-        throw new APIError({ statusCode: 400});
-    }
-}
-
-function generateQueryConditions({query,field,value}){
-    if(value){
-        return query.where({[field]:value})
-    }
-    return query;
-
+    ComplexQueryBuilder.fromQuery(Player.find())
+        .whereRegex('username', req.query.username)
+        .whereRegex('email', req.query.email)
+        .whereRange(gamesWonMin, gamesWonMax, 'gamesWon')
+        .whereRange(playedGamesMin, playedGamesMax, 'playedGames')
+        .whereRange(winRatioMin, winRatioMax, 'winRatio')
+        .limit(limit)
+        .skip(offset)
+        .build()
+        .then(players => res.json(players))
+        .catch(next);
 }
 
 const deletePlayer = function (req, res, next) {
@@ -112,13 +85,12 @@ const updatePlayer = function (req, res, next) {
     const { username, password, email } = req.body;
     const update = { username, password: hash(password), email };
 
-    Player.find({ email })
+    Player.validate(update)
+        .then(() => Player.find({ email }))
         .then(playerDocuments => {
-            if (playerDocuments.length) {
-                throw new APIError({
-                    statusCode: 409,
-                    message: errors.player.existingEmail
-                });
+            const isAnotherPersonEmail = playerDocuments.some(document => document.id !== playerId);
+            if (isAnotherPersonEmail) {
+                throw new APIError({ statusCode: 409, message: errors.player.existingEmail });
             } else {
                 return Player.findByIdAndUpdate(playerId, update);
             }

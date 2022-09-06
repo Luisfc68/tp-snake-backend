@@ -9,6 +9,8 @@ const validationErrorResponse = (err) => {
 module.exports = function (err, req, res, next) {
     if (err.name === 'ValidationError') {
         res.status(400).json(validationErrorResponse(err));
+    } else if (err.name === 'RangeError') {
+        res.status(400).json({ error: err.message });
     } else {
         const response = res.status(err.statusCode || 500);
         err.message ? response.json({ error: err.message }) : response.send();

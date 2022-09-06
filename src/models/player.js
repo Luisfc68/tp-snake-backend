@@ -26,30 +26,27 @@ const playerSchema = new Schema(
             type: Number,
             default: 0
         },
-        winRatio:{
+        winRatio: {
             type: Number,
-            default: 0,
-            set: function() {
-                if(this.gamesWon!=0 && this.playedGames!=0){
-                    return this.gamesWon/this.playedGames
-                }
-                else{
-                    return 0;
-                }
-            },
+            default: 0
         }
     },
     {
         collection: 'players',
+        timestamps: true,
         versionKey: false
     }
 );
+
+playerSchema.pre(['save', 'updateOne'], function(next) {
+    this.winRatio = this.playedGames?  this.gamesWon / this.playedGames : 0;
+    next();
+});
 
 playerSchema.set('toJSON',{
     transform: (document, object) => {
         object.id = document.id;
         object.image = `/players/images/${object.id}`;
-        object.winRatio = document.playedGames? document.gamesWon / document.playedGames : 0;
         delete object._id;
         delete object.password;
     }
