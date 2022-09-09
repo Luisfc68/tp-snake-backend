@@ -6,7 +6,8 @@ const errorMessages = {
     commons: {
         mandatory: 'Campo obligatorio',
         environmentSpecific: (variableName) =>  `Variable de entorno ${variableName} no encontrada`,
-        environmentGeneric: 'Variable de entorno no encontrada'
+        environmentGeneric: 'Variable de entorno no encontrada',
+        invalidRange: (variableName) => `Rango invalido (${variableName})`
     },
     player: {
         existingEmail: 'Esa dirección de correo ya se encuentra registrada',

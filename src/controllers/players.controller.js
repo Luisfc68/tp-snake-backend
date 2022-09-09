@@ -2,7 +2,7 @@ const { Player } = require('../models/player');
 const { hash } = require('../utils/security.utils');
 const APIError = require('../errors/APIError');
 const { errors } = require('../constants/errorMessages');
-const { isValidId } = require('../utils/mongo.utils');
+const { isValidId, ComplexQueryBuilder } = require('../utils/mongo');
 const { getIdFromAuthenticatedRequest } = require('../utils/controller.utils');
 const { saveImage, getImage } = require('../utils/fileSystem.utils');
 
@@ -44,6 +44,27 @@ const getPlayer = function (req, res, next) {
         })
         .catch(next);
 }
+const getPlayers = function(req,res,next) {
+    const offset = req.query.offset || 0;
+    const limit = req.query.limit || 10;
+    const {
+        gamesWonMin, gamesWonMax,
+        playedGamesMin, playedGamesMax,
+        winRatioMin, winRatioMax
+    } = req.query;
+
+    ComplexQueryBuilder.fromQuery(Player.find())
+        .whereRegex('username', req.query.username)
+        .whereRegex('email', req.query.email)
+        .whereRange(gamesWonMin, gamesWonMax, 'gamesWon')
+        .whereRange(playedGamesMin, playedGamesMax, 'playedGames')
+        .whereRange(winRatioMin, winRatioMax, 'winRatio')
+        .limit(limit)
+        .skip(offset)
+        .build()
+        .then(players => res.json(players))
+        .catch(next);
+}
 
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
@@ -64,13 +85,12 @@ const updatePlayer = function (req, res, next) {
     const { username, password, email } = req.body;
     const update = { username, password: hash(password), email };
 
-    Player.find({ email })
+    Player.validate(update)
+        .then(() => Player.find({ email }))
         .then(playerDocuments => {
-            if (playerDocuments.length) {
-                throw new APIError({
-                    statusCode: 409,
-                    message: errors.player.existingEmail
-                });
+            const isAnotherPersonEmail = playerDocuments.some(document => document.id !== playerId);
+            if (isAnotherPersonEmail) {
+                throw new APIError({ statusCode: 409, message: errors.player.existingEmail });
             } else {
                 return Player.findByIdAndUpdate(playerId, update);
             }
@@ -109,6 +129,7 @@ const getPlayerImage = function (req, res, next) {
 module.exports = {
     signUp,
     getPlayer,
+    getPlayers,
     deletePlayer,
     updatePlayer,
     uploadPlayerImage,
