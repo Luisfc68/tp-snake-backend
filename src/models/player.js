@@ -54,5 +54,6 @@ playerSchema.set('toJSON',{
 
 const Player = model('Player', playerSchema);
 module.exports = {
-    Player
+    Player,
+    playerSchema
 }

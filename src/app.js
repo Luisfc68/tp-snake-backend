@@ -10,6 +10,7 @@ const errorHandler = require('./middlewares/errors.middleware');
 
 const playersRouter = require('./routes/players.routes');
 const authRouter = require('./routes/auth.routes');
+const gameRouter = require('./routes/game.route');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(loggingMiddleware);
 
 app.use(playersRouter);
 app.use(authRouter);
+app.use(gameRouter);
 
 app.use(errorHandler);
 
