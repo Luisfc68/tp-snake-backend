@@ -14,7 +14,8 @@ const errorMessages = {
         invalidEmail: 'Dirección de correo inválida'
     },
     game: {
-        gameNotFound: 'La sala a la que se intenta unir no existe'
+        gameNotFound: 'La sala a la que se intenta unir no existe',
+        creationError: 'Hubo un error creando la sala de juego'
     }
 };
 
