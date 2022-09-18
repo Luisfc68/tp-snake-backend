@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+    <title>Cliente de pruebas</title>
+</head>
+<body>
+    <h1>Cliente de pruebas</h1>
+    <div>
+        <div class="field">
+            <p>Token</p><input type="text" id="token"/>
+        </div>
+        <div class="field">
+            <p>Room</p><input type="text" value="test" id="room"/>
+        </div>
+        <div><button onclick="connect()">Conectar</button></div>
+    </div>
+    <div>
+        <div><button onclick="ping()">Ping</button></div>
+    </div>
+
+
+</body>
+<style>
+    body > div {
+        display: flex;
+        align-items: center;
+    }
+    .field {
+        padding: 20px;
+
+    }
+
+    .field > input {
+        color: red;
+    }
+
+</style>
+<script>
+    let socket
+    function connect() {
+        const token = document.querySelector("#token").value;
+        const room =  document.querySelector("#room").value;
+        console.log(`token -> ${token}`)
+        console.log(`room -> ${room}`)
+        socket = io('ws://127.0.0.1:8080', {
+            auth: {
+                token
+            },
+            query: {
+                gameId: room
+            },
+            reconnection: false
+        });
+        socket.on("connect_error", (err) => {
+            console.log(`Error -> ${err.message}`);
+        });
+        socket.on("connect", () => {
+            console.log('conectado');
+        });
+
+    }
+
+    function ping() {
+        socket.emit('ping',123)
+    }
+</script>
+</html>

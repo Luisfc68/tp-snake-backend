@@ -1,6 +1,7 @@
 const APIError = require('../errors/APIError');
 const { validateAccessToken } = require('../utils/security.utils');
-const { errors } = require("../constants/errorMessages");
+const { errors } = require('../constants/errorMessages');
+const SocketError = require('../errors/SocketError');
 
 const BEARER = 'Bearer ';
 
@@ -33,6 +34,18 @@ const authMiddleware = function () {
     }
 }
 
+const socketAuthMiddleware = function (socket, next) {
+    const token = socket.handshake.auth.token;
+    validateAccessToken(token, (err, decoded) => {
+        if (err) {
+            next(new SocketError({ message: errors.auth.invalidToken }));
+        } else {
+            next();
+        }
+    })
+}
+
 module.exports = {
-    authMiddleware
+    authMiddleware,
+    socketAuthMiddleware
 }

@@ -12,6 +12,9 @@ const errorMessages = {
     player: {
         existingEmail: 'Esa dirección de correo ya se encuentra registrada',
         invalidEmail: 'Dirección de correo inválida'
+    },
+    game: {
+        gameNotFound: 'La sala a la que se intenta unir no existe'
     }
 };
 

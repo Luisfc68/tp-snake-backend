@@ -1,35 +1,44 @@
-const logger = require('consola');
 const express = require('express');
-const { mongoose } = require('mongoose');
 
 const expressConfig = require('./configs/express.config');
 const mongoConfig = require('./configs/mongo.config');
+const socketConfig = require('./configs/socketio.config');
 
-const loggingMiddleware = require('./middlewares/logging.middleware');
+const { loggingMiddleware } = require('./middlewares/logging.middleware');
 const errorHandler = require('./middlewares/errors.middleware');
+const { socketAuthMiddleware } = require('./middlewares/auth.middleware');
 
 const playersRouter = require('./routes/players.routes');
 const authRouter = require('./routes/auth.routes');
 const gameRouter = require('./routes/game.route');
 
+const { GameServer } = require('./GameServer');
+const { roomMiddleware } = require('./middlewares/socket/room.middleware');
+
+const events = require('./socket/events');
+
 const app = express();
 
-app.use(express.json());
-app.use(loggingMiddleware);
-
-app.use(playersRouter);
-app.use(authRouter);
-app.use(gameRouter);
-
-app.use(errorHandler);
-
-mongoose.connect(mongoConfig.getDbUri(), (error) => {
-    if(error) {
-        logger.error(`Error connecting to database ${error}`)
-        return;
-    }
-    logger.start(`Connected to database ${mongoConfig.name}`);
-    app.listen(expressConfig.port, () => {
-        logger.start(`Server started on port ${expressConfig.port}`);
-    })
+const server = new GameServer({
+    expressApp: app,
+    mongoConfig,
+    expressConfig,
+    socketConfig
 });
+
+server.useOnAPI(express.json());
+server.useOnAPI(loggingMiddleware);
+
+server.useOnAPI(playersRouter);
+server.useOnAPI(authRouter);
+server.useOnAPI(gameRouter);
+
+server.useOnAPI(errorHandler);
+
+server.useOnSockets(socketAuthMiddleware);
+server.useOnSockets(roomMiddleware);
+
+Object.values(events)
+    .forEach(event => server.registerEvent(event));
+
+server.run();

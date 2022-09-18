@@ -1,7 +1,7 @@
 const logger = require('consola');
 const crypto = require('crypto');
 
-module.exports = function (req, res, next) {
+const loggingMiddleware = function (req, res, next) {
     const requestId = crypto.randomUUID();
     const start = new Date();
 
@@ -16,4 +16,7 @@ module.exports = function (req, res, next) {
         const responseLog = `RESPONSE (${requestId}) responded with status ${this.statusCode} in ${end.getTime() - start.getTime()}ms`;
         logger.info(responseLog);
     });
+}
+module.exports = {
+    loggingMiddleware
 }
