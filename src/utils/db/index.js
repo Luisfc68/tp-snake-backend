@@ -1,4 +1,4 @@
 module.exports = {
-    ...require('./mongo.utils'),
+    ...require('./db.utils'),
     ...require('./ComplexQueryBuilder')
 }

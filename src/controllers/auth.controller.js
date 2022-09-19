@@ -1,6 +1,6 @@
-const { Player } = require('../models/player');
 const { hash, generateTokens, validateRefreshToken } = require('../utils/security.utils');
 const { errors } = require('../constants/errorMessages');
+const playerService = require('../services/players.service');
 
 const authErrorResponse = (res, message) => res.status(401)
     .json({ error: message })
@@ -9,7 +9,7 @@ const authErrorResponse = (res, message) => res.status(401)
 const login = function (req, res, next) {
     const { email, password } = req.body;
 
-    Player.findOne({ email })
+    playerService.findPlayer({ email })
     .then(player => {
         if (!player || player?.password !== hash(password)) {
             authErrorResponse(res, errors.auth.invalidCredentials);

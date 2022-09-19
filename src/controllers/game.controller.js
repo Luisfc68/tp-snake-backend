@@ -1,18 +1,18 @@
 const { getIdFromAuthenticatedRequest } = require('../utils/controller.utils');
-const { Player } = require('../models/player');
 const APIError = require('../errors/APIError');
-const { Game } = require('../models/game');
 const roomHandler = require('../socket/GameRoomHandler');
 const { errors } = require('../constants/errorMessages');
+const playerService = require('../services/players.service');
+const gameService = require('../services/game.service');
 
 const createGame = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
-    return Player.findById(playerId)
+    return playerService.findPlayerById(playerId)
         .then(player => {
             if (player) {
-                const game = new Game({ owner: player });
-                return game.save();
+                const game = { owner: player };
+                return gameService.saveGame(game);
             } else {
                 throw new APIError({ statusCode: 404 });
             }

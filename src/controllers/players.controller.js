@@ -1,20 +1,20 @@
-const { Player } = require('../models/player');
 const { hash } = require('../utils/security.utils');
 const APIError = require('../errors/APIError');
 const { errors } = require('../constants/errorMessages');
-const { isValidId, ComplexQueryBuilder } = require('../utils/mongo');
+const { isValidId, ComplexQueryBuilder } = require('../utils/db');
 const { getIdFromAuthenticatedRequest } = require('../utils/controller.utils');
 const { saveImage, getImage } = require('../utils/fileSystem.utils');
+const playerService = require('../services/players.service');
 
 const signUp = function (req, res, next) {
     const { email, username, password } = req.body;
-    const player = new Player({
+    const player = {
         email,
         username,
         password: hash(password)
-    });
-    Player.validate(player)
-        .then(() => Player.find({ email }).exec())
+    };
+    playerService.validatePlayer(player)
+        .then(() => playerService.findPlayer({ email }))
         .then(playerDocuments => {
             if (playerDocuments.length) {
                 throw new APIError({
@@ -22,7 +22,7 @@ const signUp = function (req, res, next) {
                     message: errors.player.existingEmail
                 });
             } else {
-                return player.save();
+                return playerService.savePlayer(player);
             }
         })
         .then(savedPlayer => res.status(201).json(savedPlayer))
@@ -34,7 +34,7 @@ const getPlayer = function (req, res, next) {
     if (!isValidId(playerId)) {
         throw new APIError({ statusCode: 404 });
     }
-    Player.findById(playerId)
+    playerService.findPlayerById(playerId)
         .then(player => {
             if (player) {
                 res.json(player);
@@ -53,7 +53,7 @@ const getPlayers = function(req,res,next) {
         winRatioMin, winRatioMax
     } = req.query;
 
-    ComplexQueryBuilder.fromQuery(Player.find())
+    ComplexQueryBuilder.fromQuery(playerService.findPlayer())
         .whereRegex('username', req.query.username)
         .whereRegex('email', req.query.email)
         .whereRange(gamesWonMin, gamesWonMax, 'gamesWon')
@@ -69,7 +69,7 @@ const getPlayers = function(req,res,next) {
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
-    Player.findByIdAndDelete(playerId)
+    playerService.deletePlayer(playerId)
         .then(result => {
             if (result) {
                 res.json(result);
@@ -85,14 +85,14 @@ const updatePlayer = function (req, res, next) {
     const { username, password, email } = req.body;
     const update = { username, password: hash(password), email };
 
-    Player.validate(update)
-        .then(() => Player.find({ email }))
+    playerService.validatePlayer(update)
+        .then(() => playerService.findPlayer({ email }))
         .then(playerDocuments => {
             const isAnotherPersonEmail = playerDocuments.some(document => document.id !== playerId);
             if (isAnotherPersonEmail) {
                 throw new APIError({ statusCode: 409, message: errors.player.existingEmail });
             } else {
-                return Player.findByIdAndUpdate(playerId, update);
+                return playerService.updatePlayer({ id: playerId, updatedPlayer: update });
             }
         })
         .then(result => {

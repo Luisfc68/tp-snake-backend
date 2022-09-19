@@ -1,4 +1,4 @@
-const { isValidId } = require('./mongo');
+const { isValidId } = require('./db');
 const APIError = require('../errors/APIError');
 
 const getIdFromAuthenticatedRequest = (req) => {
