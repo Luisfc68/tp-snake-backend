@@ -13,7 +13,7 @@ const authRouter = require('./routes/auth.routes');
 const gameRouter = require('./routes/game.route');
 
 const { GameServer } = require('./GameServer');
-const { roomMiddleware } = require('./middlewares/socket/room.middleware');
+const { joinRoomMiddleware } = require('./middlewares/socket/room.middleware');
 
 const events = require('./socket/events');
 
@@ -36,7 +36,7 @@ server.useOnAPI(gameRouter);
 server.useOnAPI(errorHandler);
 
 server.useOnSockets(socketAuthMiddleware);
-server.useOnSockets(roomMiddleware);
+server.useOnSockets(joinRoomMiddleware);
 
 Object.values(events)
     .forEach(event => server.registerEvent(event));

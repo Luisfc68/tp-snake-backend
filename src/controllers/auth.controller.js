@@ -10,12 +10,12 @@ const login = function (req, res, next) {
     const { email, password } = req.body;
 
     playerService.findPlayer({ email })
-    .then(player => {
-        if (!player || player?.password !== hash(password)) {
+    .then(players => {
+        if (!players.length || players[0]?.password !== hash(password)) {
             authErrorResponse(res, errors.auth.invalidCredentials);
             return;
         }
-        const tokens = generateTokens({ id: player.id });
+        const tokens = generateTokens({ id: players[0].id });
         res.status(200).json(tokens).send();
     })
     .catch(next);

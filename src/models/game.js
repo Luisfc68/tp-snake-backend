@@ -17,15 +17,17 @@ const gameSchema = new Schema(
         ],
         owner: {
             required: [true, errors.commons.mandatory],
-            type: playerSchema
+            type: playerSchema,
+            excludeIndexes: true
         },
         maxReachedLevel: {
             type: Number,
             default: 1
         },
-        finalized: {
-            type: Boolean,
-            default: false
+        status: {
+            type: String,
+            enum: ['WAITING', 'PLAYING', 'FINISHED'],
+            default: 'WAITING'
         }
     },
     {

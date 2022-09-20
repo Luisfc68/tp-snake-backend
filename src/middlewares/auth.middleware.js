@@ -40,6 +40,7 @@ const socketAuthMiddleware = function (socket, next) {
         if (err) {
             next(new SocketError({ message: errors.auth.invalidToken }));
         } else {
+            socket.handshake.query.playerId = decoded.id;
             next();
         }
     })
