@@ -1,0 +1,9 @@
+node_modules/
+public/
+data/
+
+snake.postman-collection.json
+.env
+.gitignore
+*.md
+*.html
