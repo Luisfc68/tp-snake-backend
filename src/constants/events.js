@@ -2,7 +2,9 @@ const clientEvents = {
     GAME_START: 'gameStart',
     MOVEMENTS: 'movements',
     DEATH: 'death',
-    FINISHED: 'gameFinished'
+    FINISHED: 'gameFinished',
+    FOOD_SPAWN: 'foodSpawn',
+    FOOD_EATEN: 'foodEaten'
 }
 
 const serverEvents = {

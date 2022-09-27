@@ -60,6 +60,8 @@
     let socket
     function connect() {
         let key = null
+        let canvas
+        let food
         const token = document.querySelector("#token").value;
         const room =  document.querySelector("#room").value;
         console.log(`token -> ${token}`)
@@ -88,10 +90,11 @@
         socket.on("gameStart", (arg) => {
             console.log('gameStart');
             console.log(arg)
-            const canvas = document.createElement('canvas');
+            canvas = document.createElement('canvas');
             canvas.id = 'board';
-            canvas.width = arg.boardSize
-            canvas.height = arg.boardSize
+            canvas.width = arg.boardSize * 10
+            canvas.height = arg.boardSize * 10
+            console.log(`canvas x=${canvas.width} y=${canvas.height}`)
 
             document.body.appendChild(canvas);
 
@@ -128,6 +131,20 @@
                 }
             };
 
+            socket.on('foodSpawn', arg => {
+                console.log('foodSpawn');
+                console.log(arg)
+                food = { x: arg.x * 10, y: 1000 - arg.y * 10, height: 10, width: 10}
+                console.log(`FOOD AT x=${food.x} y=${food.y}`)
+            });
+
+            socket.on('foodEaten', arg => {
+                console.log('foodEaten');
+                console.log(arg)
+                let canvas = document.getElementById("board");
+                let ctx = canvas.getContext("2d");
+                ctx.clearRect(food.x,food.y,food.height,food.width)
+            });
 
         });
 
@@ -144,11 +161,12 @@
             let ctx = canvas.getContext("2d");
             ctx.fillStyle = "#FF0000";
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(food.x,food.y,food.height,food.width)
             arg.forEach(snake => {
 
                 snake.positions.forEach(position =>  {
                     console.log(position.x,position.y )
-                    ctx.fillRect(position.x,400 - position.y,20,20)
+                    ctx.fillRect(position.x * 10,1000 - position.y * 10,10,10)
                 })
             })
         });

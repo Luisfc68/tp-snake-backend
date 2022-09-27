@@ -10,13 +10,7 @@ const logger = require('consola');
 const { SnakeBody, MOVES } = require('./SnakeBody');
 const { clientEvents } = require('../../constants/events');
 const { mapValuesToArray } = require('../../utils/array.utils');
-
-const DEFAULT_START_POSITIONS = [
-    { positions: [{ x: 0 , y: BOARD_SIZE - 1 }], movingDirection: MOVES.RIGHT },
-    { positions: [{ x: 0 , y: 0 }], movingDirection: MOVES.UP },
-    { positions: [{ x: BOARD_SIZE - 1, y: 0 }], movingDirection: MOVES.LEFT },
-    { positions: [{ x: BOARD_SIZE - 1, y: BOARD_SIZE - 1 }], movingDirection: MOVES.DOWN }
-];
+const { randomInt } = require('../../utils/math.utils');
 
 class SnakeGame {
 
@@ -29,12 +23,21 @@ class SnakeGame {
     #currentMovementInterval;
     #speedUpInterval;
     #level
+    #currentFood
+
+    DEFAULT_START_POSITIONS = [
+        { positions: [{ x: 0 , y: BOARD_SIZE - 1 }], movingDirection: MOVES.RIGHT },
+        { positions: [{ x: 0 , y: 0 }], movingDirection: MOVES.UP },
+        { positions: [{ x: BOARD_SIZE - 1, y: 0 }], movingDirection: MOVES.LEFT },
+        { positions: [{ x: BOARD_SIZE - 1, y: BOARD_SIZE - 1 }], movingDirection: MOVES.DOWN }
+    ];
 
     constructor({ roomId, ioServer }) {
         this.#players = new Map();
         this.#roomId = roomId;
         this.#ioServer = ioServer;
         this.#winner = null;
+        this.#currentFood = null;
         this.#sendMovementSpeed = INITIAL_SPEED;
         this.#currentMovementInterval = null;
         this.#speedUpInterval = null;
@@ -127,8 +130,8 @@ class SnakeGame {
 
     #doMatch() {
         mapValuesToArray(this.#players).forEach((player, index) => {
-            player.snakeBody.positions = DEFAULT_START_POSITIONS[index].positions;
-            player.snakeBody.movingDirection = DEFAULT_START_POSITIONS[index].movingDirection;
+            player.snakeBody.positions = this.DEFAULT_START_POSITIONS[index].positions;
+            player.snakeBody.movingDirection = this.DEFAULT_START_POSITIONS[index].movingDirection;
         });
         this.#speedUpInterval = setInterval(() => {
             if (this.#currentMovementInterval) {
@@ -151,6 +154,7 @@ class SnakeGame {
                 }
             });
             this.emit(clientEvents.MOVEMENTS, movementsData);
+            this.#checkEatenFood();
             this.#checkDeaths();
             this.#checkEnd();
         }, this.#sendMovementSpeed);
@@ -199,6 +203,25 @@ class SnakeGame {
             .some(otherPlayer => otherPlayer.snakeBody.positions
                 .some(position => position.x === player.head.x && position.y === player.head.y)
             );
+    }
+
+    foodSpawn() {
+        const x = randomInt(0, BOARD_SIZE);
+        const y = randomInt(0, BOARD_SIZE);
+        this.#currentFood = { x, y };
+        this.emit(clientEvents.FOOD_SPAWN, this.#currentFood);
+    }
+
+    #checkEatenFood() {
+        mapValuesToArray(this.#players)
+            .filter(player => player.snakeBody.positions
+                .some(position => position.x === this.#currentFood.x && position.y === this.#currentFood.y)
+            )
+            .forEach(player => {
+               player.snakeBody.grow();
+               this.emit(clientEvents.FOOD_EATEN, this.#currentFood);
+               this.foodSpawn();
+            });
     }
 }
 

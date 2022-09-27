@@ -20,18 +20,22 @@ class SnakeBody {
                 if (neck?.y === head.y + 1) {
                     return;
                 }
+                break;
             case MOVES.DOWN:
                 if (neck?.y === head.y - 1) {
                     return;
                 }
+                break;
             case MOVES.RIGHT:
                 if (neck?.x === head.x + 1) {
                     return;
                 }
+                break;
             case MOVES.LEFT:
                 if (neck?.x === head.x - 1) {
                     return;
                 }
+                break;
         }
         this.#movingDirection = movingDirection;
     }
@@ -67,6 +71,26 @@ class SnakeBody {
     isOutOfField() {
         const outOfField = value => value < 0 || value > BOARD_SIZE;
         return outOfField(this.#positions[0].x) || outOfField(this.#positions[0].y);
+    }
+
+    grow() {
+        let newPart;
+        newPart = { ...this.#positions.at(-1)};
+        switch (this.#movingDirection) {
+            case MOVES.UP:
+                newPart.y--;
+                break;
+            case MOVES.DOWN:
+                newPart.y++;
+                break;
+            case MOVES.RIGHT:
+                newPart.x--;
+                break;
+            case MOVES.LEFT:
+                newPart.x++;
+                break;
+        }
+        this.#positions.push(newPart);
     }
 }
 

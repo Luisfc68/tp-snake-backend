@@ -20,6 +20,7 @@ module.exports = {
         }
         game.init(playerId)
             .then(() => game.emit(clientEvents.GAME_START, { boardSize: BOARD_SIZE }))
+            .then(() => game.foodSpawn())
             .catch(e => this.emit(serverEvents.INIT_GAME, { error: e.message }));
     }
 }
