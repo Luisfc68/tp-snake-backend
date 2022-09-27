@@ -12,6 +12,11 @@
     <h1>Cliente de pruebas</h1>
     <div>
         <div class="field">
+            <p>Usuario</p><input type="text"/>
+        </div>
+    </div>
+    <div>
+        <div class="field">
             <p>Token</p><input type="text" id="token"/>
         </div>
         <div class="field">
@@ -22,6 +27,12 @@
     <div>
         <div><button onclick="ping()">Ping</button></div>
     </div>
+    <div>
+        <div><button onclick="playerConfirm()">Player confirm</button></div>
+    </div>
+    <div>
+        <div><button onclick="initGame()">Init game</button></div>
+    </div>
 
 
 </body>
@@ -29,6 +40,7 @@
     body > div {
         display: flex;
         align-items: center;
+        margin-top: 20px;
     }
     .field {
         padding: 20px;
@@ -39,10 +51,15 @@
         color: red;
     }
 
+    canvas {
+        border: 3px solid red;
+    }
+
 </style>
 <script>
     let socket
     function connect() {
+        let key = null
         const token = document.querySelector("#token").value;
         const room =  document.querySelector("#room").value;
         console.log(`token -> ${token}`)
@@ -63,10 +80,105 @@
             console.log('conectado');
         });
 
+        socket.on("initGame", (arg) => {
+            console.log('initGame');
+            console.log(arg)
+        });
+
+        socket.on("gameStart", (arg) => {
+            console.log('gameStart');
+            console.log(arg)
+            const canvas = document.createElement('canvas');
+            canvas.id = 'board';
+            canvas.width = arg.boardSize
+            canvas.height = arg.boardSize
+
+            document.body.appendChild(canvas);
+
+            document.onkeydown = function (event) {
+                switch (event.keyCode) {
+                    case 37:
+                        if (key !== 37) {
+                            key = 37
+                            socket.emit('changeDirection', { movingDirection: 'LEFT'})
+                            console.log("Left key is pressed.");
+                        }
+                        break;
+                    case 38:
+                        if (key !== 38) {
+                            key = 38
+                            socket.emit('changeDirection', { movingDirection: 'UP'})
+                            console.log("Up key is pressed.");
+                        }
+                        break;
+                    case 39:
+                        if (key !== 39) {
+                            key = 39
+                            socket.emit('changeDirection', { movingDirection: 'RIGHT'})
+                            console.log("Right key is pressed.");
+                        }
+                        break;
+                    case 40:
+                        if (key !== 40) {
+                            key = 40
+                            socket.emit('changeDirection', { movingDirection: 'DOWN'})
+                            console.log("Down key is pressed.");
+                        }
+                        break;
+                }
+            };
+
+
+        });
+
+        socket.on("playerConfirm", (arg) => {
+            console.log('playerConfirm');
+            console.log(arg)
+        });
+
+        socket.on("movements", (arg) => {
+            console.log('movements');
+            console.log(arg)
+
+            let canvas = document.getElementById("board");
+            let ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#FF0000";
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            arg.forEach(snake => {
+
+                snake.positions.forEach(position =>  {
+                    console.log(position.x,position.y )
+                    ctx.fillRect(position.x,400 - position.y,20,20)
+                })
+            })
+        });
+
+        socket.on("death", (arg) => {
+            console.log('death');
+            console.log(arg)
+        });
+
+        socket.on("gameFinished", (arg) => {
+            console.log('death');
+            console.log(arg)
+        });
+
+
+
     }
 
     function ping() {
         socket.emit('ping',123)
     }
+
+    function initGame() {
+        socket.emit('initGame')
+    }
+
+    function playerConfirm() {
+        socket.emit('playerConfirm')
+    }
+
+
 </script>
 </html>

@@ -3,6 +3,7 @@ const APIError = require('../errors/APIError');
 const { errors } = require('../constants/errorMessages');
 const playerService = require('../services/players.service');
 const gameService = require('../services/game.service');
+const roomHandler = require('../socket/game/RoomHandler');
 
 const createGame = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
@@ -18,6 +19,7 @@ const createGame = function (req, res, next) {
         })
         .then(gameDocument => {
             if (gameDocument) {
+                roomHandler.createGame(gameDocument.id);
                 res.status(201).json(gameDocument);
             } else {
                 throw new APIError({

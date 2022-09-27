@@ -1,7 +1,6 @@
 const APIError = require('../errors/APIError');
 const { validateAccessToken } = require('../utils/security.utils');
 const { errors } = require('../constants/errorMessages');
-const SocketError = require('../errors/SocketError');
 
 const BEARER = 'Bearer ';
 
@@ -38,7 +37,7 @@ const socketAuthMiddleware = function (socket, next) {
     const token = socket.handshake.auth.token;
     validateAccessToken(token, (err, decoded) => {
         if (err) {
-            next(new SocketError({ message: errors.auth.invalidToken }));
+            next({ error: errors.auth.invalidToken });
         } else {
             socket.handshake.query.playerId = decoded.id;
             next();

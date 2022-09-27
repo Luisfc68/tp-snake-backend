@@ -2,6 +2,7 @@ const { mongoose } = require('mongoose');
 const logger = require('consola');
 const { SocketServer } = require("./socket/SocketServer");
 const { createServer } = require('http');
+const roomHandler = require('./socket/game/RoomHandler');
 
 class GameServer {
 
@@ -39,6 +40,7 @@ class GameServer {
             }
             logger.start(`Connected to database ${this.#mongoConfig.name}`);
             this.#httpServer.listen(this.#expressConfig.port, () => {
+                roomHandler.initRoomHandler(this.#socketServer.ioServer);
                 logger.start(`Server started on port ${this.#expressConfig.port}`);
             });
         });

@@ -1,31 +1,22 @@
-const SocketError = require('../../errors/SocketError');
 const { errors } = require('../../constants/errorMessages');
-const gameService = require('../../services/game.service');
-const { isValidId } = require('../../utils/db');
+const { getConnectionParam } = require('../../utils/socket.utils');
+const roomHandler = require('../../socket/game/RoomHandler');
 
 const joinRoomMiddleware = function (socket, next) {
-    const roomToJoin = socket.handshake.query.gameId;
-    const playerId = socket.handshake.query.playerId;
-    if (!isValidId(roomToJoin)) {
-        next(new SocketError({ message: errors.game.gameNotFound }));
+    const gameId = getConnectionParam(socket, 'gameId');
+
+    const game = roomHandler.getGame(gameId);
+    if (!game) {
+        next({ error: errors.game.gameNotFound });
         return;
     }
-    gameService.findByGameId(roomToJoin)
-        .then(game => {
-           if (game && game.status === 'WAITING') {
-               game.players.push(playerId);
-               return game.save();
-           } else {
-               next(new SocketError({ message: errors.game.gameNotFound }));
-               return;
-           }
+
+    game.addPlayer(socket)
+        .then(() => {
+            socket.join(gameId)
+            next();
         })
-        .then(updatedGame => {
-            if (updatedGame) {
-                socket.join(roomToJoin)
-                next();
-            }
-        });
+        .catch(next);
 }
 
 module.exports = {

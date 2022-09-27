@@ -11,11 +11,15 @@ const errorMessages = {
     },
     player: {
         existingEmail: 'Esa dirección de correo ya se encuentra registrada',
-        invalidEmail: 'Dirección de correo inválida'
+        invalidEmail: 'Dirección de correo inválida',
+        playerNotFound: 'El jugador no existe'
     },
     game: {
-        gameNotFound: 'La sala a la que se intenta unir no existe',
-        creationError: 'Hubo un error creando la sala de juego'
+        gameNotFound: 'La sala no existe',
+        creationError: 'Hubo un error creando la sala de juego',
+        missingConfirmations: 'Hay jugadores que aun no estan listos',
+        notPermission: 'No tiene permisos para iniciar el juego',
+        gameFull: 'La sala esta llena'
     }
 };
 

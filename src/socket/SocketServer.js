@@ -21,6 +21,9 @@ class SocketServer {
         this.#events.push(event);
     }
 
+    get ioServer() {
+        return this.#ioServer;
+    }
 }
 
 module.exports = {
