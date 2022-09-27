@@ -201,7 +201,7 @@ class SnakeGame {
         return mapValuesToArray(this.#players)
             .filter(otherPlayer => otherPlayer.playerId !== player.playerId)
             .some(otherPlayer => otherPlayer.snakeBody.positions
-                .some(position => position.x === player.head.x && position.y === player.head.y)
+                .some(position => position.x === player.snakeBody.head.x && position.y === player.snakeBody.head.y)
             );
     }
 
