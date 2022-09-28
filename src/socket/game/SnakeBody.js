@@ -69,8 +69,14 @@ class SnakeBody {
     }
 
     isOutOfField() {
-        const outOfField = value => value < 0 || value > BOARD_SIZE;
+        const outOfField = value => value < 0 || value >= BOARD_SIZE;
         return outOfField(this.#positions[0].x) || outOfField(this.#positions[0].y);
+    }
+
+    isSelfCollided() {
+        const head = this.#positions[0];
+        const body = this.#positions.slice(1);
+        return body.some(bodyPart => bodyPart.x === head.x && bodyPart.y === head.y);
     }
 
     grow() {

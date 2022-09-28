@@ -186,7 +186,7 @@ class SnakeGame {
 
     #checkDeaths() {
         mapValuesToArray(this.#players).forEach(player => {
-            if (player.snakeBody.isOutOfField() || this.#checkCollisions(player)) {
+            if (player.snakeBody.isOutOfField() || player.snakeBody.isSelfCollided() || this.#checkCollisions(player)) {
                 this.emit(clientEvents.DEATH, player.playerId);
                 player.socket.disconnect();
                 this.#players.delete(player.playerId);
@@ -228,8 +228,3 @@ class SnakeGame {
 module.exports = {
     SnakeGame
 }
-
-/** todo list
- * apple spawn
- * apple eat
- */
