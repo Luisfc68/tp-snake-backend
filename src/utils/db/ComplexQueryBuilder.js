@@ -13,6 +13,12 @@ class ComplexQueryBuilder {
         this.#query.where(whereCondition);
         return this;
     }
+    whereEquals(field, pattern) {
+        if(pattern){
+        this.#query.where(field).equals(pattern)
+        }
+        return this;
+    }
 
     whereRange(min, max, property) {
         this.#query = whereRange({ query: this.#query, min, max, property });
