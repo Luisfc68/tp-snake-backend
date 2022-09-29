@@ -55,9 +55,12 @@ const getGames = function(req,res,next) {
     const {
         reachedLevelMin, reachedLevelMax,
     } = req.query;
+    const playerOwner= validatePlayer(req.query.ownerId,next)
+    const playerWinner = validatePlayer(req.query.winnerId,next)
+
     ComplexQueryBuilder.fromQuery(gameService.findGame())
-        .whereRegex('owner.username', req.query.ownerUsername)
-        .whereRegex('winner.username', req.query.winnerUsername)
+        .whereEquals('owner', playerOwner)
+        .whereEquals('winner', playerWinner)
         .whereRange(reachedLevelMin, reachedLevelMax, 'maxReachedLevel')
         .whereEquals('status', req.query.status)
         .limit(limit)
@@ -65,6 +68,23 @@ const getGames = function(req,res,next) {
         .build()
         .then(games => res.json(games))
         .catch(next);
+}
+
+function validatePlayer(id,next) {
+    if(id){
+        if (!isValidId(id)) {
+            throw new APIError({ statusCode: 404 });
+        }
+        playerService.findPlayerById(id).then(player => {
+            if (player) {
+                return player
+            } else {
+                throw new APIError({ statusCode: 404 });
+            }}).catch(next);
+    }
+    else{
+        return null
+    }
 }
 
 

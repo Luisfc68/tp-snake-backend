@@ -52,7 +52,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "6301d74d093646bf2d704068"
+									"value": "6335223dab37c173b45744ed"
 								}
 							]
 						}
@@ -312,13 +312,13 @@
 									"disabled": true
 								},
 								{
-									"key": "ownerUsername",
-									"value": "Luisfc68",
+									"key": "winnerId",
+									"value": "",
 									"disabled": true
 								},
 								{
-									"key": "winnerUsername",
-									"value": "Luisfc68",
+									"key": "ownerId",
+									"value": "6335223dab37c173b45744ed",
 									"disabled": true
 								}
 							]
@@ -334,7 +334,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzUyMjNkYWIzN2MxNzNiNDU3NDRlZCIsImlhdCI6MTY2NDQ1ODg2OSwiZXhwIjoxNjY0NDYyNDY5fQ.bwDhkTOXfvLMQFwIujqav3yZtzBaYDwyo43vHSSsLmM",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzUyMjNkYWIzN2MxNzNiNDU3NDRlZCIsImlhdCI6MTY2NDQ2MjUzOSwiZXhwIjoxNjY0NDY2MTM5fQ.bzVOu5B1qAreunOYBFn-kCczuJvxbfeH3NrGh4DTdo8",
 				"type": "string"
 			}
 		]
