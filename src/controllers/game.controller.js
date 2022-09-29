@@ -49,8 +49,26 @@ const getGame = function (req, res, next) {
         .catch(next);
 }
 
+const getGames = function(req,res,next) {
+    const offset = req.query.offset || 0;
+    const limit = req.query.limit || 10;
+    const {
+        reachedLevelMin, reachedLevelMax,
+    } = req.query;
+    ComplexQueryBuilder.fromQuery(gameService.findGame())
+        .whereRegex('owner.id', req.query.ownerId)
+        .whereRange(reachedLevelMin, reachedLevelMax, 'maxReachedLevel')
+        .whereRegex('status', req.query.status)
+        .limit(limit)
+        .skip(offset)
+        .build()
+        .then(games => res.json(games))
+        .catch(next);
+}
+
 
 module.exports = {
     createGame,
-    getGame
+    getGame,
+    getGames
 }
