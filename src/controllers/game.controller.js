@@ -56,7 +56,8 @@ const getGames = function(req,res,next) {
         reachedLevelMin, reachedLevelMax,
     } = req.query;
     ComplexQueryBuilder.fromQuery(gameService.findGame())
-        .whereRegex('owner.username', req.query.ownerName)
+        .whereRegex('owner.username', req.query.ownerUsername)
+        .whereRegex('winner.username', req.query.winnerUsername)
         .whereRange(reachedLevelMin, reachedLevelMax, 'maxReachedLevel')
         .whereEquals('status', req.query.status)
         .limit(limit)

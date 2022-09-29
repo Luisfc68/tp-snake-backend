@@ -307,13 +307,18 @@
 									"disabled": true
 								},
 								{
-									"key": "ownerId",
-									"value": "6335223dab37c173b45744ed",
+									"key": "status",
+									"value": "WAITING",
 									"disabled": true
 								},
 								{
-									"key": "status",
-									"value": "WAITING",
+									"key": "ownerUsername",
+									"value": "Luisfc68",
+									"disabled": true
+								},
+								{
+									"key": "winnerUsername",
+									"value": "Luisfc68",
 									"disabled": true
 								}
 							]
@@ -329,7 +334,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzUyMjNkYWIzN2MxNzNiNDU3NDRlZCIsImlhdCI6MTY2NDQyNjU2MCwiZXhwIjoxNjY0NDMwMTYwfQ.lJgHSvMzCOkD8lhn8fBrTIkSMBPMY4Ie4-SA0BvnH0M",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzUyMjNkYWIzN2MxNzNiNDU3NDRlZCIsImlhdCI6MTY2NDQ1ODg2OSwiZXhwIjoxNjY0NDYyNDY5fQ.bwDhkTOXfvLMQFwIujqav3yZtzBaYDwyo43vHSSsLmM",
 				"type": "string"
 			}
 		]
