@@ -16,7 +16,7 @@ class ComplexQueryBuilder {
     }
     whereEquals(field, value) {
         if(value){
-        this.#query.where(field).equals(value)
+            this.#query.where(field).equals(value)
         }
         return this;
     }

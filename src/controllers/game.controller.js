@@ -55,8 +55,8 @@ const getGames = function(req,res,next) {
     const {
         reachedLevelMin, reachedLevelMax,
     } = req.query;
-    validateId(req.query.ownerId)
-    validateId(req.query.winnerId)
+    validateIdIfPresent(req.query.ownerId)
+    validateIdIfPresent(req.query.winnerId)
     ComplexQueryBuilder.fromQuery(gameService.findGame())
         .whereEquals('owner._id',req.query.ownerId)
         .whereEquals('winner._id', req.query.winnerId)
@@ -69,11 +69,9 @@ const getGames = function(req,res,next) {
         .catch(next);
 }
 
-function validateId(id) {
-    if(id){
-        if (!isValidId(id)) {
-            throw new APIError({ statusCode: 404 });
-        }
+function validateIdIfPresent(id) {
+    if(id && !isValidId(id)){
+        throw new APIError({ statusCode: 404 });
     }
 }
 
