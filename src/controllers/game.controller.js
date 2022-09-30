@@ -4,6 +4,8 @@ const { errors } = require('../constants/errorMessages');
 const playerService = require('../services/players.service');
 const gameService = require('../services/game.service');
 const roomHandler = require('../socket/game/RoomHandler');
+const { isValidId, ComplexQueryBuilder } = require('../utils/db');
+
 
 const createGame = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
@@ -31,6 +33,51 @@ const createGame = function (req, res, next) {
         .catch(next);
 }
 
+const getGame = function (req, res, next) {
+    const gameId = req.params.id;
+    if (!isValidId(gameId)) {
+        throw new APIError({ statusCode: 404 });
+    }
+    gameService.findByGameId(gameId)
+        .then(game => {
+            if (game) {
+                res.json(game);
+            } else {
+                throw new APIError({ statusCode: 404 });
+            }
+        })
+        .catch(next);
+}
+
+const getGames = function(req,res,next) {
+    const offset = req.query.offset || 0;
+    const limit = req.query.limit || 10;
+    const {
+        reachedLevelMin, reachedLevelMax,
+    } = req.query;
+    validateIdIfPresent(req.query.ownerId)
+    validateIdIfPresent(req.query.winnerId)
+    ComplexQueryBuilder.fromQuery(gameService.findGame())
+        .whereEquals('owner._id',req.query.ownerId)
+        .whereEquals('winner._id', req.query.winnerId)
+        .whereRange(reachedLevelMin, reachedLevelMax, 'maxReachedLevel')
+        .whereEquals('status', req.query.status)
+        .limit(limit)
+        .skip(offset)
+        .build()
+        .then(games => res.json(games))
+        .catch(next);
+}
+
+function validateIdIfPresent(id) {
+    if(id && !isValidId(id)){
+        throw new APIError({ statusCode: 404 });
+    }
+}
+
+
 module.exports = {
-    createGame
+    createGame,
+    getGame,
+    getGames
 }

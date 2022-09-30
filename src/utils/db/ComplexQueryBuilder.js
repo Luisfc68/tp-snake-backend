@@ -1,4 +1,5 @@
-const { whereRange, whereRegex } = require('./db.utils');
+const { whereRange, whereRegex} = require('./db.utils');
+
 
 class ComplexQueryBuilder {
     #query;
@@ -11,6 +12,12 @@ class ComplexQueryBuilder {
 
     where(whereCondition) {
         this.#query.where(whereCondition);
+        return this;
+    }
+    whereEquals(field, value) {
+        if(value){
+            this.#query.where(field).equals(value)
+        }
         return this;
     }
 

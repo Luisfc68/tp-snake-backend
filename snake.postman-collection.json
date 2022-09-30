@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "87b14d4d-849a-4e43-91f5-00aaf2723fd6",
+		"_postman_id": "b06cec7f-24ca-4632-af4e-b72e415011a1",
 		"name": "snake",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21377950"
 	},
 	"item": [
 		{
@@ -15,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Luisfc68\",\r\n    \"password\": \"12345\",\r\n    \"email\": \"luis2@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"username\": \"Luisfc68\",\r\n    \"password\": \"12345\",\r\n    \"email\": \"luis@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -51,7 +52,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "6301634e1e908bc01bb9d50f"
+									"value": "6335223dab37c173b45744ed"
 								}
 							]
 						}
@@ -60,9 +61,21 @@
 				},
 				{
 					"name": "Get players",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{url}}/players",
 							"host": [
@@ -99,7 +112,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Luisfc68\",\r\n    \"password\": \"12345\",\r\n    \"email\": \"luiseditado@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"username\": \"Luisfc68\",\r\n    \"password\": \"12345\",\r\n    \"email\": \"luiseditado@gmail.com\",\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -131,12 +144,7 @@
 									"type": "file",
 									"src": "/D:/Descargas/bojji.jpg"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{url}}/players/images",
@@ -235,6 +243,90 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "games",
+			"item": [
+				{
+					"name": "Create game",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/game",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get game by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/game/6335224dab37c173b45744f1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game",
+								"6335224dab37c173b45744f1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get game",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/game",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"game"
+							],
+							"query": [
+								{
+									"key": "reachedLevelMin",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "reachedLevelMax",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "WAITING",
+									"disabled": true
+								},
+								{
+									"key": "winnerId",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "ownerId",
+									"value": "6335223dab37c173b45744ed",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
@@ -242,7 +334,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMDE2MzRlMWU5MDhiYzAxYmI5ZDUwZiIsImlhdCI6MTY2MTgzMjE0OSwiZXhwIjoxNjYxODM1NzQ5fQ.jaipgcHaPXlBueKvodMQJFtIRFXUozGKCrH82yVEM-g",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMzUyMjNkYWIzN2MxNzNiNDU3NDRlZCIsImlhdCI6MTY2NDQ2MjUzOSwiZXhwIjoxNjY0NDY2MTM5fQ.bzVOu5B1qAreunOYBFn-kCczuJvxbfeH3NrGh4DTdo8",
 				"type": "string"
 			}
 		]
