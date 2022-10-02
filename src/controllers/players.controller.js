@@ -13,7 +13,7 @@ const signUp = function (req, res, next) {
         username,
         password: hash(password)
     };
-    playerService.validatePlayer(player)
+    return playerService.validatePlayer(player)
         .then(() => playerService.findPlayer({ email }))
         .then(playerDocuments => {
             if (playerDocuments.length) {
@@ -69,7 +69,7 @@ const getPlayers = function(req,res,next) {
 const deletePlayer = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
 
-    playerService.deletePlayer(playerId)
+    return playerService.deletePlayer(playerId)
         .then(result => {
             if (result) {
                 res.json(result);
@@ -85,7 +85,7 @@ const updatePlayer = function (req, res, next) {
     const { username, password, email } = req.body;
     const update = { username, password: hash(password), email };
 
-    playerService.validatePlayer(update)
+    return playerService.validatePlayer(update)
         .then(() => playerService.findPlayer({ email }))
         .then(playerDocuments => {
             const isAnotherPersonEmail = playerDocuments.some(document => document.id !== playerId);
@@ -116,7 +116,7 @@ const uploadPlayerImage = function (req, res, next) {
 
 const getPlayerImage = function (req, res, next) {
     const playerId = req.params.id;
-    getImage('players', playerId, true)
+    return getImage('players', playerId, true)
         .then(imageName => {
             if (!imageName) {
                 throw new APIError({ statusCode: 404 });

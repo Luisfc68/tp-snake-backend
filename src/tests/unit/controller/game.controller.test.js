@@ -3,10 +3,10 @@ const { getIdFromAuthenticatedRequest } = require('../../../utils/controller.uti
 const playerService = require('../../../services/players.service');
 const gameService = require('../../../services/game.service');
 const roomHandler = require('../../../socket/game/RoomHandler');
-const { isValidId} = require('../../../utils/db/db.utils');
+const { isValidId } = require('../../../utils/db/db.utils');
 const mockPlayer= require('../../__mocks__/playerMocks');
 const mockGame= require('../../__mocks__/gameMocks');
-let {req,res,next} = require('../../__mocks__/expressObjectMocks')
+let {req,res,next} = require('../../__mocks__/expressObjectMocks');
 
 
 jest.mock('../../../utils/controller.utils')
@@ -14,7 +14,6 @@ jest.mock('../../../services/players.service')
 jest.mock('../../../services/game.service')
 jest.mock('../../../socket/game/RoomHandler')
 jest.mock('../../../utils/db/db.utils')
-
 
 describe('Game controller tests', () => {
     describe('Create game tests', () => {
@@ -114,7 +113,16 @@ describe('Game controller tests', () => {
                     limit: 1
                 }
             }
-            //gameController.getGames(req, res, next)
+            const query ={
+                limit: function(){
+                    return this
+                },
+                offset: function(){
+                    return this
+                }
+            }
+            gameService.findGame.mockReturnValue(query)
+            gameController.getGames(req, res, next)
         });
 
         test('Should return 404 due to invalid Id', () => {
