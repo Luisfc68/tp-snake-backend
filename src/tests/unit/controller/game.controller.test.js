@@ -7,13 +7,14 @@ const { isValidId } = require('../../../utils/db/db.utils');
 const mockPlayer= require('../../__mocks__/playerMocks');
 const mockGame= require('../../__mocks__/gameMocks');
 let {req,res,next} = require('../../__mocks__/expressObjectMocks');
+const { whereRange, ComplexQueryBuilder } = require('../../../utils/db');
 
 
 jest.mock('../../../utils/controller.utils')
 jest.mock('../../../services/players.service')
 jest.mock('../../../services/game.service')
 jest.mock('../../../socket/game/RoomHandler')
-jest.mock('../../../utils/db/db.utils')
+jest.mock('../../../utils/db')
 
 describe('Game controller tests', () => {
     describe('Create game tests', () => {
@@ -95,11 +96,10 @@ describe('Game controller tests', () => {
             } 
             isValidId.mockReturnValue(false)
             gameService.findByGameId.mockReturnValue(Promise.resolve(null))
-            try{
+            try {
                 gameController.getGame(req, res, next)
-            }
-            catch(error){
-                expect(error.statusCode).toBe(404)
+            } catch(error) {
+                expect(error.statusCode).toBe(404);
             }
             
         });
@@ -107,27 +107,46 @@ describe('Game controller tests', () => {
     describe('Get games tests', () => {
         //TODO
         test('Should return list of games', () => {
-            const req ={
+            const req = {
                 query:{
                     offset: 1,
                     limit: 1
                 }
             }
-            const query ={
-                limit: function(){
-                    return this
+            const query = {
+                limit: function() {
+                    return this;
                 },
-                offset: function(){
-                    return this
+                offset: function() {
+                    return this;
+                },
+                skip: function () {
+                    return this;
+                },
+                then: function () {
+                    return Promise.resolve([]);
                 }
             }
-            gameService.findGame.mockReturnValue(query)
-            gameController.getGames(req, res, next)
+            whereRange.mockReturnValue(query);
+            ComplexQueryBuilder.fromQuery.mockReturnValue(new ComplexQueryBuilder());
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereEquals")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereRange")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "skip")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "limit")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "build")
+                .mockReturnValue(query);
+
+            gameService.findGame.mockReturnValue(query);
+            gameController.getGames(req, res, next);
         });
 
         test('Should return 404 due to invalid Id', () => {
             const req ={
-                query:{
+                query: {
                     offset: 1,
                     limit: 1,
                     ownerId: 1
@@ -135,8 +154,7 @@ describe('Game controller tests', () => {
             }
             try{
                 gameController.getGames(req, res, next)
-            }
-            catch(error){
+            } catch(error) {
                 expect(error.statusCode).toBe(404)
             }
         });
