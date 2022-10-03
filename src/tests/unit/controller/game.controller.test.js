@@ -3,11 +3,10 @@ const { getIdFromAuthenticatedRequest } = require('../../../utils/controller.uti
 const playerService = require('../../../services/players.service');
 const gameService = require('../../../services/game.service');
 const roomHandler = require('../../../socket/game/RoomHandler');
-const { isValidId } = require('../../../utils/db/db.utils');
 const mockPlayer= require('../../__mocks__/playerMocks');
 const mockGame= require('../../__mocks__/gameMocks');
 let {req,res,next} = require('../../__mocks__/expressObjectMocks');
-const { whereRange, ComplexQueryBuilder } = require('../../../utils/db');
+const { isValidId, whereRange, ComplexQueryBuilder } = require('../../../utils/db');
 
 
 jest.mock('../../../utils/controller.utils')
@@ -16,6 +15,28 @@ jest.mock('../../../services/game.service')
 jest.mock('../../../socket/game/RoomHandler')
 jest.mock('../../../utils/db')
 
+const query = { 
+    then: function () {
+        return Promise.resolve(mockGame);
+    }
+}
+
+beforeEach(() => {
+    
+    ComplexQueryBuilder.fromQuery.mockReturnValue(new ComplexQueryBuilder());
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereEquals")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereRange")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "skip")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "limit")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "build")
+                .mockReturnValue(query);
+});
+
+
 describe('Game controller tests', () => {
     describe('Create game tests', () => {
         
@@ -23,13 +44,12 @@ describe('Game controller tests', () => {
             
             getIdFromAuthenticatedRequest.mockReturnValue('1')
             playerService.findPlayerById.mockReturnValue(Promise.resolve(mockPlayer))
-            gameService.saveGame.mockReturnValue(mockGame)
-            roomHandler.createGame.mockReturnValue(mockGame)
-            await gameController.createGame(req,res,next)
+            gameService.saveGame.mockReturnValue(Promise.resolve(mockGame))
+            roomHandler.createGame.mockReturnValue(Promise.resolve(mockGame))
+            await gameController.createGame(req,res,next).then(() => {  expect(res._status).toBe(201) })
             expect(playerService.findPlayerById).toHaveBeenCalledTimes(1);
             expect(gameService.saveGame).toHaveBeenCalledTimes(1);
             expect(roomHandler.createGame).toHaveBeenCalledTimes(1);
-
 
         });
 
@@ -61,7 +81,7 @@ describe('Game controller tests', () => {
         });
     });
     describe('Get game function', () => {
-        test('should return game mock', async() => {
+        test('Should return game mock', async() => {
             const req= {
                 params:{
                     id: null
@@ -69,11 +89,12 @@ describe('Game controller tests', () => {
             } 
             isValidId.mockReturnValue(true)
             gameService.findByGameId.mockReturnValue(Promise.resolve(mockGame))
-            gameController.getGame(req, res, next)
+            await gameController.getGame(req, res, next).then(() => {  expect(res._json).toBe(mockGame) })
+            expect(isValidId).toHaveBeenCalledTimes(1);
             expect(gameService.findByGameId).toHaveBeenCalledTimes(1);
         });
 
-        test('should return 404 due to isValidId', async() => {
+        test('Should return 404 due to isValidId', async() => {
             const req= {
                 params:{
                     id: null
@@ -88,7 +109,7 @@ describe('Game controller tests', () => {
             }
             
         });
-        test('should return 404 due to game not found', async() => {
+        test('Should return 404 due to game not found', async() => {
             const req= {
                 params:{
                     id: null
@@ -97,7 +118,7 @@ describe('Game controller tests', () => {
             isValidId.mockReturnValue(false)
             gameService.findByGameId.mockReturnValue(Promise.resolve(null))
             try {
-                gameController.getGame(req, res, next)
+                await gameController.getGame(req, res, next)
             } catch(error) {
                 expect(error.statusCode).toBe(404);
             }
@@ -105,43 +126,19 @@ describe('Game controller tests', () => {
         });
     });
     describe('Get games tests', () => {
-        //TODO
-        test('Should return list of games', () => {
+        
+        test('Should return list of games', async () => {
             const req = {
                 query:{
-                    offset: 1,
-                    limit: 1
-                }
-            }
-            const query = {
-                limit: function() {
-                    return this;
-                },
-                offset: function() {
-                    return this;
-                },
-                skip: function () {
-                    return this;
-                },
-                then: function () {
-                    return Promise.resolve([]);
+                    offset: null,
+                    limit: null
                 }
             }
             whereRange.mockReturnValue(query);
-            ComplexQueryBuilder.fromQuery.mockReturnValue(new ComplexQueryBuilder());
-            jest.spyOn(ComplexQueryBuilder.prototype, "whereEquals")
-                .mockReturnThis();
-            jest.spyOn(ComplexQueryBuilder.prototype, "whereRange")
-                .mockReturnThis();
-            jest.spyOn(ComplexQueryBuilder.prototype, "skip")
-                .mockReturnThis();
-            jest.spyOn(ComplexQueryBuilder.prototype, "limit")
-                .mockReturnThis();
-            jest.spyOn(ComplexQueryBuilder.prototype, "build")
-                .mockReturnValue(query);
-
-            gameService.findGame.mockReturnValue(query);
-            gameController.getGames(req, res, next);
+            gameService.findGame.mockReturnValue(Promise.resolve(mockGame));
+            const result= await gameController.getGames(req, res, next)
+            expect(result).toBe(mockGame);
+            expect(gameService.findGame).toHaveBeenCalledTimes(1);
         });
 
         test('Should return 404 due to invalid Id', () => {

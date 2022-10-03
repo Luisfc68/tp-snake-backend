@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52.63% </span>
+                <span class="strong">10.52% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/19</span>
+                <span class='fraction'>2/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/8</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52.63% </span>
+                <span class="strong">10.52% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/19</span>
+                <span class='fraction'>2/19</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -120,9 +120,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -130,15 +130,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -147,7 +142,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -169,26 +169,26 @@
 class ComplexQueryBuilder {
     #query;
 &nbsp;
-    static fromQuery(query) {
-        const queryBuilder = new ComplexQueryBuilder();
-        queryBuilder.#query = query;
-        return queryBuilder;
+<span class="fstat-no" title="function not covered" >    st</span>atic fromQuery(query) {
+        const queryBuilder = <span class="cstat-no" title="statement not covered" >new ComplexQueryBuilder();</span>
+<span class="cstat-no" title="statement not covered" >        queryBuilder.#query = query;</span>
+<span class="cstat-no" title="statement not covered" >        return queryBuilder;</span>
     }
 &nbsp;
 <span class="fstat-no" title="function not covered" >    wh</span>ere(whereCondition) {
 <span class="cstat-no" title="statement not covered" >        this.#query.where(whereCondition);</span>
 <span class="cstat-no" title="statement not covered" >        return this;</span>
     }
-    whereEquals(field, value) {
-        <span class="missing-if-branch" title="if path not taken" >I</span>if(value){
+<span class="fstat-no" title="function not covered" >    wh</span>ereEquals(field, value) {
+<span class="cstat-no" title="statement not covered" >        if(value){</span>
 <span class="cstat-no" title="statement not covered" >            this.#query.where(field).equals(value)</span>
         }
-        return this;
+<span class="cstat-no" title="statement not covered" >        return this;</span>
     }
 &nbsp;
-    whereRange(min, max, property) {
-        this.#query = whereRange({ query: this.#query, min, max, property });
-        return this;
+<span class="fstat-no" title="function not covered" >    wh</span>ereRange(min, max, property) {
+<span class="cstat-no" title="statement not covered" >        this.#query = whereRange({ query: this.#query, min, max, property });</span>
+<span class="cstat-no" title="statement not covered" >        return this;</span>
     }
 &nbsp;
 <span class="fstat-no" title="function not covered" >    wh</span>ereRegex(field, pattern) {
@@ -196,8 +196,8 @@ class ComplexQueryBuilder {
 <span class="cstat-no" title="statement not covered" >        return this;</span>
     }
 &nbsp;
-    limit(limit) {
-        this.#query.limit(limit);
+<span class="fstat-no" title="function not covered" >    li</span>mit(limit) {
+<span class="cstat-no" title="statement not covered" >        this.#query.limit(limit);</span>
 <span class="cstat-no" title="statement not covered" >        return this;</span>
     }
 &nbsp;
@@ -220,7 +220,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-10-02T20:46:48.728Z
+                at 2022-10-03T03:59:16.905Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

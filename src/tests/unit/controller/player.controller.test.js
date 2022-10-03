@@ -1,4 +1,4 @@
-const { isValidId, ComplexQueryBuilder } = require('../../../utils/db');
+const { isValidId, ComplexQueryBuilder,whereRange,whereRegex } = require('../../../utils/db');
 const { getIdFromAuthenticatedRequest } = require('../../../utils/controller.utils');
 const { saveImage, getImage } = require('../../../utils/fileSystem.utils');
 const playerService = require('../../../services/players.service');
@@ -12,11 +12,36 @@ jest.mock('../../../utils/fileSystem.utils')
 jest.mock('../../../utils/controller.utils')
 
 
+const query = { 
+    then: function () {
+        return Promise.resolve(mockPlayer);
+    }
+}
+
+beforeEach(() => {
+    
+    ComplexQueryBuilder.fromQuery.mockReturnValue(new ComplexQueryBuilder());
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereEquals")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereEquals")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereRange")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "whereRegex")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "skip")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "limit")
+                .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "build")
+                .mockReturnValue(query);
+});
+
 describe('Player controller tests', () => {
     
     describe('Sign up tests', () => {
         
-        test('should return player and status 201', async () => {
+        test('Should return player and status 201', async () => {
             req= {
                 body:{
                     email: 'mail@gmail.com',
@@ -31,11 +56,12 @@ describe('Player controller tests', () => {
             const result= await playerController.signUp(req,res,next)
             expect(playerService.validatePlayer).toHaveBeenCalledTimes(1);
             expect(playerService.findPlayer).toHaveBeenCalledTimes(1);
+            expect(playerService.savePlayer).toHaveBeenCalledTimes(1);
             expect(result._status).toBe(201)
             expect(result._json).toBe(req.body);
 
         });
-        test('should return 409 due to signing up with an existing email', async() => {
+        test('Should return 409 due to signing up with an existing email', async() => {
             //TODO
             const req= {
                 body:{
@@ -46,7 +72,7 @@ describe('Player controller tests', () => {
             }
             
             playerService.validatePlayer.mockReturnValue(Promise.resolve(req.body))
-            playerService.findPlayer.mockReturnValue(Promise.resolve('value'))
+            playerService.findPlayer.mockReturnValue(Promise.resolve('existingmail@gmail.com'));
             try {
                 await playerController.signUp(req,res,next)
             } catch (error) {
@@ -55,7 +81,7 @@ describe('Player controller tests', () => {
         });        
     });
     describe('Get player', () => {
-        test('should return mocked player ', async() => {
+        test('Should return mocked player ', async() => {
             const req= {
                 params:{
                     id: null
@@ -64,7 +90,7 @@ describe('Player controller tests', () => {
             isValidId.mockReturnValue(true)
             playerService.findPlayerById.mockReturnValue(Promise.resolve(mockPlayer))
 
-            await playerController.getPlayer(req,res,next)
+            await playerController.getPlayer(req,res,next).then(() => {expect(res._json).toBe(mockPlayer);});
             expect(isValidId).toHaveBeenCalledTimes(1);
             expect(playerService.findPlayerById).toHaveBeenCalledTimes(1);
 
@@ -90,7 +116,7 @@ describe('Player controller tests', () => {
                     id: null
                 }
             } 
-            isValidId.mockReturnValue(false)
+            isValidId.mockReturnValue(true)
             playerService.findPlayerById.mockReturnValue(Promise.resolve(null))
             try{
                 await playerController.getPlayer(req,res,next)
@@ -100,33 +126,53 @@ describe('Player controller tests', () => {
             }
         });
     });
+    describe('Get players test', () => {
+        
+        test('Should return mock player', async () => {
+            
+            const req = {
+                query:{
+                    offset: null,
+                    limit: null
+                }
+            }
+            whereRange.mockReturnValue(query);
+            whereRegex.mockReturnValue(query);
+            playerService.findPlayer.mockReturnValue(Promise.resolve(mockPlayer));
+            const result= await playerController.getPlayers(req, res, next);
+            expect(result).toBe(mockPlayer);
+            expect(playerService.findPlayer).toHaveBeenCalledTimes(1);
+
+        });
+        
+    });
     describe('Delete player test', () => {
         
-        test('should return the player eliminated', () => {
+        test('Should return the player eliminated', async() => {
 
             getIdFromAuthenticatedRequest.mockReturnValue(1)
             playerService.deletePlayer.mockReturnValue(Promise.resolve(mockPlayer))
 
-            playerController.deletePlayer(req,res,next)
+            await playerController.deletePlayer(req,res,next).then(() => {  expect(res._json).toBe(mockPlayer) })
             expect(getIdFromAuthenticatedRequest).toHaveBeenCalledTimes(1);
             expect(playerService.deletePlayer).toHaveBeenCalledTimes(1);
         });
 
-        test('should return 404 due to not being able to find the player', async() => {
+        test('Should return 404 due to not being able to find the player', async() => {
 
             getIdFromAuthenticatedRequest.mockReturnValue(Promise.resolve(1))
-            playerService.deletePlayer.mockReturnValue(Promise.resolve(null))
+            playerService.deletePlayer.mockReturnValue(Promise.resolve(undefined))
             try {
                 await playerController.deletePlayer(req,res,next)
             } catch (error) {
-                expect(error._status).toBe(404);
+                expect(error.statusCode).toBe(404);
             }
 
         });
     });
     describe('Update player tests', () => {
         
-        test('should return 204', () => {
+        test('Should return 204', async() => {
             const req= {
                 body:{
                     email: 'mail@gmail.com',
@@ -147,13 +193,14 @@ describe('Player controller tests', () => {
             playerService.findPlayer.mockReturnValue(Promise.resolve(findPlayer))
             playerService.updatePlayer.mockReturnValue(Promise.resolve(req.body))
 
-            playerController.updatePlayer(req,res,next)
+            await playerController.updatePlayer(req,res,next).then(() => {  expect(res._status).toBe(204); });
             
             expect(getIdFromAuthenticatedRequest).toHaveBeenCalledTimes(1);
             expect(playerService.validatePlayer).toHaveBeenCalledTimes(1);            
+            expect(playerService.updatePlayer).toHaveBeenCalledTimes(1);
         });
 
-        test('should return 409 due to wanting to update the player with an existing mail', async() => {
+        test('Should return 409 due to wanting to update the player with an existing mail', async() => {
             const req= {
                 body:{
                     email: 'mail@gmail.com',
@@ -177,7 +224,7 @@ describe('Player controller tests', () => {
                 expect(error.statusCode).toBe(409);
             }  
         });
-        test('should return 404 due to not being able to update player', async () => {
+        test('Should return 404 due to not being able to update player', async () => {
             const req= {
                 body:{
                     email: 'mail@gmail.com',
@@ -203,10 +250,10 @@ describe('Player controller tests', () => {
         });
     });
     describe('Upload player image test', () => {
-        test('should return 204', () => {
+        test('Should return 204', () => {
             getIdFromAuthenticatedRequest.mockReturnValue(1)
             saveImage.mockReturnValue(Promise.resolve(null))
-            playerController.uploadPlayerImage(req,res,next)
+            playerController.uploadPlayerImage(req,res,next).then(() => {  expect(res._status).toBe(204) })
             expect(getIdFromAuthenticatedRequest).toHaveBeenCalledTimes(1);
             expect(saveImage).toHaveBeenCalledTimes(1);
 
@@ -216,17 +263,7 @@ describe('Player controller tests', () => {
     });
 
     describe('Get player image test', () => {
-        test('should return 404', () => {
-            const req= {
-                params:{
-                    id: null
-                }
-            } 
-            getImage.mockReturnValue(Promise.resolve({}))
-            playerController.getPlayerImage(req,res,next)
-            expect(getImage).toHaveBeenCalledTimes(1);
-        });
-        test('should return 404 due to not finding players image', async() => {
+        test('Should return 404 due to not finding players image', async() => {
             const req= {
                 params:{
                     id: null
@@ -236,7 +273,6 @@ describe('Player controller tests', () => {
             try {
                 await playerController.getPlayerImage(req,res,next)
             } catch (error) {
-                console.log(error)
                 expect(error.statusCode).toBe(404);
             }
             

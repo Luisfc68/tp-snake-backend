@@ -34,7 +34,7 @@ const getPlayer = function (req, res, next) {
     if (!isValidId(playerId)) {
         throw new APIError({ statusCode: 404 });
     }
-    playerService.findPlayerById(playerId)
+    return playerService.findPlayerById(playerId)
         .then(player => {
             if (player) {
                 res.json(player);
@@ -53,7 +53,7 @@ const getPlayers = function(req,res,next) {
         winRatioMin, winRatioMax
     } = req.query;
 
-    ComplexQueryBuilder.fromQuery(playerService.findPlayer())
+    return ComplexQueryBuilder.fromQuery(playerService.findPlayer())
         .whereRegex('username', req.query.username)
         .whereRegex('email', req.query.email)
         .whereRange(gamesWonMin, gamesWonMax, 'gamesWon')
@@ -107,7 +107,7 @@ const updatePlayer = function (req, res, next) {
 
 const uploadPlayerImage = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
-    saveImage('players', playerId, req.file)
+    return saveImage('players', playerId, req.file)
         .then(() => {
             res.status(204).send();
         })
@@ -121,7 +121,11 @@ const getPlayerImage = function (req, res, next) {
             if (!imageName) {
                 throw new APIError({ statusCode: 404 });
             }
-            res.sendFile(imageName, () => res.status(404).send());
+            res.sendFile(imageName, {}, err => {
+                if (err) {
+                    res.status(404).send();
+                }
+            });
         })
         .catch(next);
 }
