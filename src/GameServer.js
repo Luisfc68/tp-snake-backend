@@ -45,6 +45,10 @@ class GameServer {
             });
         });
     }
+    disconnect() { 
+        mongoose.connection.close()
+    }
+
 }
 
 module.exports = {
