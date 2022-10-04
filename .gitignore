@@ -7,3 +7,4 @@ package-lock.json
 !/public/**/.gitkeep
 data/**
 !data/.gitkeep
+coverage/

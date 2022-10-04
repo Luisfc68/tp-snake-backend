@@ -42,3 +42,5 @@ Object.values(events)
     .forEach(event => server.registerEvent(event));
 
 server.run();
+
+module.exports = {app,server};
