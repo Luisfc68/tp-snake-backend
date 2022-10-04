@@ -5,8 +5,11 @@ const server= program.server
 let signedPlayer;
 let token;
     
-afterAll(() => {
-    server.disconnect()
+afterAll(async() => {
+    await request(app)
+        .delete('/players')
+        .set('Authorization', 'Bearer ' + token)
+    await server.disconnect();
 });
 describe('Player API', () => {
         

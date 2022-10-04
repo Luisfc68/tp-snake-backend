@@ -1,17 +1,19 @@
 const request = require('supertest');
-const program = require('../../app')
+const program = require('../app-mock')
 const express = require('express')
 const app= program.app
 const server= program.server
 let signedPlayer;
 let token;
 let signedGame;
+jest.setTimeout('120000')
 
-afterAll(async() => {
-    await request(app)
+afterAll(done => {
+    request(app)
         .delete('/players')
         .set('Authorization', 'Bearer ' + token)
-    await server.disconnect();
+    server.disconnect();
+    done();
 });
 describe('Game API', () => {
 
@@ -19,7 +21,7 @@ describe('Game API', () => {
 
         const signUpPlayer= { email: "testUser@gmail.com",password: "12345",username:"testUser"}
         await request(app)
-        .post('/players')
+        .post('/players ')
         .send(signUpPlayer).then((resp) => {
             signedPlayer=resp.body;
         });

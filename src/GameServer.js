@@ -45,15 +45,6 @@ class GameServer {
             });
         });
     }
-    disconnect = async () => { 
-        await this.#httpServer.close()
-        await mongoose.connection.close()
-        await mongoose.disconnect()  
-    }
-    seeState = async () => { 
-        console.log(mongoose.connection.readyState )
-
-    }
     
 
 }

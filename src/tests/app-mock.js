@@ -12,7 +12,7 @@ const playersRouter = require('../routes/players.routes');
 const authRouter = require('../routes/auth.routes');
 const gameRouter = require('../routes/game.route');
 
-const { GameServer } = require('../GameServer');
+const { GameServer } = require('./GameServer-mock');
 const { joinRoomMiddleware } = require('../middlewares/socket/room.middleware');
 
 const events = require('../socket/events');
