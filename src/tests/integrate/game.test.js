@@ -1,26 +1,34 @@
-const mongoose= require('mongoose');
 const request = require('supertest');
 const program = require('../../app')
+const express = require('express')
 const app= program.app
 const server= program.server
-let signedGame;
+let signedPlayer;
 let token;
+let signedGame;
 
+afterAll(async() => {
+    await request(app)
+        .delete('/players')
+        .set('Authorization', 'Bearer ' + token)
+    await server.disconnect();
+});
+describe('Game API', () => {
 
-/*
-    beforeEach(() => {
+    test('CreateGame', async () => {
+
+        const signUpPlayer= { email: "testUser@gmail.com",password: "12345",username:"testUser"}
         await request(app)
-        .post('/auth')
-        .send({ email: "luis@gmail.com",password: "12345"}).then((resp) => {token= resp.body.accessToken;});
-    });
-afterAll(() => {
-        server.disconnect();
-    });
-    */
+        .post('/players')
+        .send(signUpPlayer).then((resp) => {
+            signedPlayer=resp.body;
+        });
+        const sendBody = {
+            email: signedPlayer.email,
+            password: signUpPlayer.password}
+        await request(app).post('/auth').send(sendBody).then((resp)=> {token= resp.body.accessToken})
 
-   //describe('Game API', () => {
-    /*
-    test('SignUp', async () => {
+
         const sentPlayer= { id: signedPlayer.id}
         await request(app)
         .post('/game')
@@ -30,36 +38,31 @@ afterAll(() => {
             expect(resp.body).toHaveProperty('owner');
             expect(resp.body).toHaveProperty('players');
             expect(resp.body).toHaveProperty('status');
-            expect(resp.body.id).toHaveProperty('id');
+            expect(resp.body).toHaveProperty('id');
             signedGame=resp.body;
         });
 
     });
-    */
 
-    /*
+
     test('Get', async () => {
         await request(app)
         .get('/game')
         .set('Authorization', 'Bearer ' + token)
         .then((resp) => {
             expect(resp.statusCode).toBe(200);
-            expect(resp.body).toBe(signedGame)
+            expect(()=>{Array.isArray(res.body)}).toBeTruthy();
         });
 
     });
-    */
 
-    /*
     test('Get/', async () => {
         await request(app)
         .get('/game/'+signedGame.id)
         .set('Authorization', 'Bearer ' + token)
         .then((resp) => {
             expect(resp.statusCode).toBe(200);
-            expect(resp.body).toBe(signedGame)
+            expect(JSON.stringify(resp.body)).toBe(JSON.stringify(signedGame));
         });
-
     });
-    */
-  // });
+})
