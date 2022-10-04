@@ -25,6 +25,9 @@ Este repositorio es el backend para el juego realizado para la materia desarroll
 4. `npm run dev`
 * NOTA: en este caso los requerimientos son tener instalados node, npm y mongodb
 
+## ¿Como correr los tests?.
+ `npm test`
+
 ## ¿Como levantar el juego en local usando docker-compose?
 1. `git clone https://github.com/Luisfc68/tp-snake-backend.git`
 2. `cd tp-snake-backend`
