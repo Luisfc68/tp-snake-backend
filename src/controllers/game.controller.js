@@ -9,7 +9,6 @@ const { isValidId, ComplexQueryBuilder } = require('../utils/db');
 
 const createGame = function (req, res, next) {
     const playerId = getIdFromAuthenticatedRequest(req);
-
     return playerService.findPlayerById(playerId)
         .then(player => {
             if (player) {

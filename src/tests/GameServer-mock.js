@@ -1,8 +1,11 @@
 const { mongoose } = require('mongoose');
+const Mockgoose = require('mockgoose').Mockgoose;
+const mockgoose = new Mockgoose(mongoose);
 const logger = require('consola');
-const { SocketServer } = require("./socket/SocketServer");
+const { SocketServer } = require("../socket/SocketServer");
 const { createServer } = require('http');
-const roomHandler = require('./socket/game/RoomHandler');
+const roomHandler = require('../socket/game/RoomHandler');
+const { run } = require('jest');
 
 class GameServer {
 
@@ -32,21 +35,40 @@ class GameServer {
         this.#socketServer.registerEvent(event);
     }
 
-    run() {
-        mongoose.connect(this.#mongoConfig.getDbUri(), (error) => {
-            if(error) {
-                logger.error(`Error connecting to database ${error}`);
-                return;
-            }
-            logger.start(`Connected to database ${this.#mongoConfig.name}`);
-            this.#httpServer.listen(this.#expressConfig.port, () => {
-                roomHandler.initRoomHandler(this.#socketServer.ioServer);
-                logger.start(`Server started on port ${this.#expressConfig.port}`);
-            });
+   run() {
+    //No borrar las variables. Son necesarias para que ande.
+        const mongoConfig=this.#mongoConfig
+        const uri=this.#httpServer
+        const expressConfig=this.#expressConfig
+        const socketServer=this.#socketServer
+        mockgoose.prepareStorage().then(function() {
+
+            mongoose.connect(mongoConfig.getDbUri(), (error) => {
+                uri.listen(expressConfig.port, () => {
+                    roomHandler.initRoomHandler(socketServer.ioServer);
+                    logger.start(`Server started on port ${expressConfig.port}`);
+                });
+            });  
         });
     }
-    disconnect = () => { 
-        mongoose.connection.close()
+
+    
+    disconnect = async () => { 
+        await this.#httpServer.close()
+        await mongoose.connection.close()
+        await mockgoose.shutdown() 
+        const socketServer = this.#socketServer
+        socketServer.ioServer.close()
+    }
+
+    seeState = async () => { 
+        console.log(mongoose.connection.readyState )
+
+    }
+
+    seeMongooseState = async () => { 
+        console.log(mockgoose.helper.isMocked() )
+
     }
 
 }
