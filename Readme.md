@@ -79,6 +79,9 @@ abstraernos de una capa más de complejidad.
 * **socket.io**: en el proyecto se necesitaba comunicación en tiempo real entre cliente y servidor. Se eligió 
 socket.io porque los integrantes ya estamos familiarizados con esta opción y además es sumamente amigable
 para el tema de la definición de eventos.
+### Test
+* **jest**: Es una herramienta de testing facil de utilizar que cuenta con un gran numero de librerias que se pueden emplear
+para un desarrollo de los tests mas fluido, ademas de que es la opcion con la que mas experiencia tenemos.
 
 ### Cliente
 * **Angular**: se eligió este framework para trabajar por familiaridad de los integrantes. Como es el que más conocemos
