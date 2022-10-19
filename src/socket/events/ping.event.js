@@ -1,6 +1,8 @@
+const logger = require('consola');
+
 module.exports = {
     name: 'ping',
     handler: function (args) {
-        console.log(`ping recibido, args: ${args}`);
+        logger.info(`ping recibido, args: ${args}`);
     }
 }

@@ -1,24 +1,20 @@
 const { mongoose } = require('mongoose');
-const Mockgoose = require('mockgoose').Mockgoose;
-const mockgoose = new Mockgoose(mongoose);
 const logger = require('consola');
 const { SocketServer } = require("../socket/SocketServer");
 const { createServer } = require('http');
 const roomHandler = require('../socket/game/RoomHandler');
-const { run } = require('jest');
+const { MongoMemoryServer } = require("mongodb-memory-server");
 
 class GameServer {
 
     #app
     #httpServer
-    #mongoConfig
     #expressConfig
     #socketServer
 
-    constructor({ expressApp, expressConfig, socketConfig, mongoConfig }) {
+    constructor({ expressApp, expressConfig, socketConfig }) {
         this.#app = expressApp;
         this.#httpServer = createServer(this.#app);
-        this.#mongoConfig = mongoConfig;
         this.#expressConfig = expressConfig;
         this.#socketServer = new SocketServer({ httpServer: this.#httpServer, socketConfig });
     }
@@ -37,18 +33,16 @@ class GameServer {
 
    run() {
     //No borrar las variables. Son necesarias para que ande.
-        const mongoConfig=this.#mongoConfig
         const uri=this.#httpServer
         const expressConfig=this.#expressConfig
         const socketServer=this.#socketServer
-        mockgoose.prepareStorage().then(function() {
-
-            mongoose.connect(mongoConfig.getDbUri(), (error) => {
-                uri.listen(expressConfig.port, () => {
-                    roomHandler.initRoomHandler(socketServer.ioServer);
-                    logger.start(`Server started on port ${expressConfig.port}`);
-                });
-            });  
+        MongoMemoryServer.create().then(database => {
+           mongoose.connect(database.getUri(), (error) => {
+               uri.listen(expressConfig.port, () => {
+                   roomHandler.initRoomHandler(socketServer.ioServer);
+                   logger.start(`Server started on port ${expressConfig.port}`);
+               });
+           });
         });
     }
 
@@ -56,19 +50,12 @@ class GameServer {
     disconnect = async () => { 
         await this.#httpServer.close()
         await mongoose.connection.close()
-        await mockgoose.shutdown() 
         const socketServer = this.#socketServer
         socketServer.ioServer.close()
     }
 
-    seeState = async () => { 
-        console.log(mongoose.connection.readyState )
-
-    }
-
-    seeMongooseState = async () => { 
-        console.log(mockgoose.helper.isMocked() )
-
+    seeState = async () => {
+        logger.info(mongoose.connection.readyState);
     }
 
 }

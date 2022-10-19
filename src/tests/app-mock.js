@@ -1,7 +1,6 @@
 const express = require('express');
 
 const expressConfig = require('../configs/express.config');
-const mongoConfig = require('../configs/mongo.config');
 const socketConfig = require('../configs/socketio.config');
 
 const { loggingMiddleware } = require('../middlewares/logging.middleware');
@@ -21,7 +20,6 @@ const app = express();
 
 const server = new GameServer({
     expressApp: app,
-    mongoConfig,
     expressConfig,
     socketConfig
 });
