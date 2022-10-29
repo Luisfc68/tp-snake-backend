@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 
 const expressConfig = require('./configs/express.config');
 const mongoConfig = require('./configs/mongo.config');
@@ -26,6 +27,7 @@ const server = new GameServer({
     socketConfig
 });
 
+app.use(cors());
 server.useOnAPI(express.json());
 server.useOnAPI(loggingMiddleware);
 

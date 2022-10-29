@@ -3,7 +3,7 @@ const gameController = require('../controllers/game.controller')
 const { authMiddleware } = require("../middlewares/auth.middleware");
 
 const router = Router();
-const game = '/game';
+const game = '/games';
 const gameById = game + '/:id';
 
 
