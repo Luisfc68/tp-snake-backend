@@ -58,7 +58,9 @@ class SnakeGame {
         return gameService.findByGameId(this.#roomId)
             .then(game => {
                 if (game && game.status === 'WAITING') {
-                    game.players.push(playerId);
+                    if (!game.players.includes(playerId)) {
+                        game.players.push(playerId);
+                    }
                     return game.save();
                 } else {
                     throw new SocketError({ message: errors.game.gameNotFound });
