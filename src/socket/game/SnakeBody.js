@@ -10,7 +10,7 @@ class SnakeBody {
     }
 
     set movingDirection(movingDirection) {
-        if (this.#movingDirection === movingDirection) {
+        if (this.#movingDirection === movingDirection || this.#positions.length === 0) {
             return;
         }
         const head = this.#positions[0];
@@ -45,7 +45,11 @@ class SnakeBody {
     }
 
     get head() {
-        return this.#positions[0];
+        if (this.#positions.length !== 0) {
+            return this.#positions[0];
+        } else {
+            return undefined;
+        }
     }
 
     get movingDirection() {
@@ -53,6 +57,9 @@ class SnakeBody {
     }
 
     move(){
+        if (this.#positions.length === 0) {
+            return;
+        }
         const head = { ...this.#positions[0]};
         switch (this.#movingDirection) {
             case MOVES.UP:
@@ -73,11 +80,17 @@ class SnakeBody {
     }
 
     isOutOfField() {
+        if (this.#positions.length === 0) {
+            return false;
+        }
         const outOfField = value => value < 0 || value >= BOARD_SIZE;
         return outOfField(this.#positions[0].x) || outOfField(this.#positions[0].y);
     }
 
     isSelfCollided() {
+        if (this.#positions.length === 0) {
+            return false;
+        }
         const head = this.#positions[0];
         const body = this.#positions.slice(1);
         return body.some(bodyPart => bodyPart.x === head.x && bodyPart.y === head.y);
