@@ -41,6 +41,11 @@ class ComplexQueryBuilder {
         return this;
     }
 
+    sort(sort){
+        this.#query.sort(sort);
+        return this;
+    }
+
     build() {
         return this.#query;
     }

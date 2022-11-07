@@ -59,6 +59,7 @@ const getPlayers = function(req,res,next) {
         .whereRange(gamesWonMin, gamesWonMax, 'gamesWon')
         .whereRange(playedGamesMin, playedGamesMax, 'playedGames')
         .whereRange(winRatioMin, winRatioMax, 'winRatio')
+        .sort({winRatio: -1})
         .limit(limit)
         .skip(offset)
         .build()
