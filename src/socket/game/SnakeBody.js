@@ -48,6 +48,10 @@ class SnakeBody {
         return this.#positions[0];
     }
 
+    get movingDirection() {
+        return this.#movingDirection;
+    }
+
     move(){
         const head = { ...this.#positions[0]};
         switch (this.#movingDirection) {

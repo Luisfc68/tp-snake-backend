@@ -3,3 +3,4 @@ module.exports.disconnect = require('./disconnect.event');
 module.exports.playerConfirm = require('./playerConfirm.event');
 module.exports.initgame = require('./initGame.event');
 module.exports.changeDirection = require('./changeDirection.event');
+module.exports.playerUnconfirm = require('./playerUnconfirmed.event');

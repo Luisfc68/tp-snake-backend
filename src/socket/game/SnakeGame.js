@@ -1,5 +1,6 @@
 const { getConnectionParam } = require('../../utils/socket.utils');
 const gameService = require('../../services/game.service');
+const playersService = require('../../services/players.service');
 const { errors } = require('../../constants/errorMessages');
 const SocketError = require('../../errors/SocketError');
 const {
@@ -95,7 +96,7 @@ class SnakeGame {
             .then(() => this.#players.delete(playerId));
     }
 
-    confirmPlayer(socket) {
+    #changePlayerConfirmation(socket, value) {
         const playerId = getConnectionParam(socket, 'playerId');
         if (!playerId) {
             return false;
@@ -104,8 +105,16 @@ class SnakeGame {
         if (!player) {
             return false;
         }
-        player.confirmed = true;
+        player.confirmed = value;
         return true;
+    }
+
+    confirmPlayer(socket) {
+        return this.#changePlayerConfirmation(socket, true);
+    }
+
+    playerUnconfirmed(socket) {
+        return this.#changePlayerConfirmation(socket, false);
     }
 
     allPlayersConfirmed() {
@@ -142,6 +151,7 @@ class SnakeGame {
             this.#currentMovementInterval = this.#createMovementInterval();
             this.#speedUp();
             this.#level++;
+            this.emit(clientEvents.LEVEL_UP, this.#level);
         }, SPEED_UP_INTERVAL);
     }
 
@@ -152,7 +162,8 @@ class SnakeGame {
             const movementsData = playersArray.map(player => {
                 return {
                     player: player.playerId,
-                    positions: player.snakeBody.positions
+                    positions: player.snakeBody.positions,
+                    direction: player.snakeBody.movingDirection
                 }
             });
             this.emit(clientEvents.MOVEMENTS, movementsData);
@@ -175,6 +186,8 @@ class SnakeGame {
         clearInterval(this.#speedUpInterval);
         clearInterval(this.#currentMovementInterval);
         this.emit(clientEvents.FINISHED, this.#winner.playerId);
+        this.#winner.socket.disconnect();
+        this.#players.delete(this.#winner.playerId);
         gameService.findByGameId(this.#roomId)
             .then(game => {
                 game.winner = this.#winner.playerId;
@@ -183,6 +196,7 @@ class SnakeGame {
 
                 return game.save();
             })
+            .then(() => this.#updateWinnerStats(this.#winner.playerId))
             .catch(e => logger.error(e.message));
     }
 
@@ -190,13 +204,39 @@ class SnakeGame {
         mapValuesToArray(this.#players).forEach(player => {
             if (player.snakeBody.isOutOfField() || player.snakeBody.isSelfCollided() || this.#checkCollisions(player)) {
                 this.emit(clientEvents.DEATH, player.playerId);
-                player.socket.disconnect();
-                this.#players.delete(player.playerId);
-            }
-            if (this.#players.size === 0) {
-                this.#winner = player;
+                if (this.#players.size === 1) {
+                    this.#winner = player;
+                } else {
+                    player.socket.disconnect();
+                    this.#players.delete(player.playerId);
+                }
+                this.#updatePlayerStats(player.playerId);
             }
         });
+    }
+
+    #updatePlayerStats(playerId) {
+        playersService.findPlayerById(playerId)
+            .then(player => {
+                if (player) {
+                    player.playedGames++;
+                    player.save();
+                } else {
+                    throw new SocketError({ message: errors.game.gameNotFound });
+                }
+            });
+    }
+
+    #updateWinnerStats(playerId) {
+        playersService.findPlayerById(playerId)
+            .then(player => {
+                if (player) {
+                    player.gamesWon++;
+                    player.save();
+                } else {
+                    throw new SocketError({ message: errors.game.gameNotFound });
+                }
+            });
     }
 
     #checkCollisions(player) {

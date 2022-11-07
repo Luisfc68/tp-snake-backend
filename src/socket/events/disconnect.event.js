@@ -16,6 +16,9 @@ module.exports = {
             logError(playerId, gameId);
             return;
         }
-        await game.removePlayer(this);
+        const deleted = await game.removePlayer(this);
+        if (deleted) {
+            game.emit(serverEvents.PLAYER_LEFT, playerId);
+        }
     }
 }
