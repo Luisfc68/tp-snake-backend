@@ -39,7 +39,8 @@ const playerSchema = new Schema(
 );
 
 playerSchema.pre(['save', 'updateOne'], function(next) {
-    this.winRatio = this.playedGames?  this.gamesWon / this.playedGames : 0;
+    const ratio = this.gamesWon / this.playedGames;
+    this.winRatio = this.playedGames? Math.round(ratio * 100) / 100 : 0;
     next();
 });
 
