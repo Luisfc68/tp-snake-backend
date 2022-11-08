@@ -33,7 +33,7 @@ describe('Game API', () => {
 
         const sentPlayer= { id: signedPlayer.id}
         await request(app)
-        .post('/game')
+        .post('/games')
         .set('Authorization', 'Bearer ' + token)
         .send(sentPlayer).then((resp) => {
             expect(resp.statusCode).toBe(201);
@@ -47,9 +47,9 @@ describe('Game API', () => {
     });
 
 
-    test('Get', async () => {
+    test('Get games list', async () => {
         await request(app)
-        .get('/game')
+        .get('/games')
         .set('Authorization', 'Bearer ' + token)
         .then((resp) => {
             expect(resp.statusCode).toBe(200);
@@ -58,9 +58,9 @@ describe('Game API', () => {
 
     });
 
-    test('Get/', async () => {
+    test('Get game', async () => {
         await request(app)
-        .get('/game/'+signedGame.id)
+        .get('/games/'+signedGame.id)
         .set('Authorization', 'Bearer ' + token)
         .then((resp) => {
             expect(resp.statusCode).toBe(200);

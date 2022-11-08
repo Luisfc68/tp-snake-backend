@@ -33,6 +33,8 @@ beforeEach(() => {
                 .mockReturnThis();
             jest.spyOn(ComplexQueryBuilder.prototype, "limit")
                 .mockReturnThis();
+            jest.spyOn(ComplexQueryBuilder.prototype, "sort")
+                .mockReturnThis();
             jest.spyOn(ComplexQueryBuilder.prototype, "build")
                 .mockReturnValue(query);
 });
