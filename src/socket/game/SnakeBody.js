@@ -10,7 +10,7 @@ class SnakeBody {
     }
 
     set movingDirection(movingDirection) {
-        if (this.#movingDirection === movingDirection || this.#positions?.length === 0) {
+        if (this.#movingDirection === movingDirection || !this.#positions || this.#positions.length === 0) {
             return;
         }
         const head = this.#positions[0];
@@ -45,7 +45,7 @@ class SnakeBody {
     }
 
     get head() {
-        if (this.#positions?.length !== 0) {
+        if (!this.#positions || this.#positions.length !== 0) {
             return this.#positions[0];
         } else {
             return undefined;
@@ -57,7 +57,7 @@ class SnakeBody {
     }
 
     move(){
-        if (this.#positions?.length === 0) {
+        if (!this.#positions || this.#positions.length === 0) {
             return;
         }
         const head = { ...this.#positions[0]};
@@ -80,7 +80,7 @@ class SnakeBody {
     }
 
     isOutOfField() {
-        if (this.#positions?.length === 0) {
+        if (!this.#positions || this.#positions.length === 0) {
             return false;
         }
         const outOfField = value => value < 0 || value >= BOARD_SIZE;
@@ -88,7 +88,7 @@ class SnakeBody {
     }
 
     isSelfCollided() {
-        if (this.#positions?.length === 0) {
+        if (!this.#positions || this.#positions.length === 0) {
             return false;
         }
         const head = this.#positions[0];
