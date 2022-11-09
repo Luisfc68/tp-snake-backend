@@ -55,13 +55,17 @@ y son los siguientes:
 | gameFinished |               Muerte del último jugador               |
 |  foodSpawn   |       Aparición de una comida para la serpiente       |
 |  foodEaten   |        Una serpiente se comio la comida actual        |
+|   levelUp    |        Aviso de que se paso al siguiente nivel        |
 ### Eventos cliente -> servidor
-|     Evento      |                               Descripcion                               |
-|:---------------:|:-----------------------------------------------------------------------:|
-|    initGame     |      Solicitud de inicio de partida por parte del dueño de la sala      |
-|   disconnect    |                        Desconexión de un socket                         |
-|  playerConfirm  |          Confirmación de que un jugador esta listo para jugar           |
-| changeDirection | Un jugador presionó una tecla para cambiar la dirección de su serpiente |
+|      Evento       |                               Descripcion                               |
+|:-----------------:|:-----------------------------------------------------------------------:|
+|     initGame      |      Solicitud de inicio de partida por parte del dueño de la sala      |
+|    disconnect     |                        Desconexión de un socket                         |
+|   playerConfirm   |          Confirmación de que un jugador esta listo para jugar           |
+| playerUnconfirmed |              Un jugador confirmado retiró su confirmación               |
+|  changeDirection  | Un jugador presionó una tecla para cambiar la dirección de su serpiente |
+|    playerJoin     |                        Jugador entró en la sala                         |
+|    playerLeft     |                        Jugador salió de la sala                         |
 
 ## Selección de tecnologías
 ### Base de datos
@@ -88,4 +92,4 @@ para un desarrollo de los tests mas fluido, ademas de que es la opcion con la qu
 
 ### Cliente
 * **Angular**: se eligió este framework para trabajar por familiaridad de los integrantes. Como es el que más conocemos
-es en el que no sentimos capaces de generar un mejor desarrollo.
+es en el que nos sentimos capaces de generar un mejor desarrollo.
