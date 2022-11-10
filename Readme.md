@@ -36,6 +36,8 @@ Este repositorio es el backend para el juego realizado para la materia desarroll
 5. `docker-compose up`
 * NOTA: en este caso los requerimientos son tener instalados docker y docker-compose
 
+## [Readme del frontend](https://github.com/Luisfc68/tp-snake-frontend/blob/develop/README.md)
+
 ## Endpoints 
 El proyecto cuenta con una colección de postman en el archivo `snake.postman-collection.json` donde 
 se encuentran las peticiones que se pueden hacer actualmente al sistema. En total cuenta con 12 
